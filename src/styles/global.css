@@ -16,23 +16,24 @@
 @source '../pages';
 
 @theme {
-  /* Elementor kit 11 global colours (public/wp/css/elementor-post-11.css) */
-  --color-brand-primary: #ef6a31;
-  --color-brand-secondary: #292929;
+  /* Elementor kit 11's global colours, verbatim from public/wp/css/elementor-post-11.css.
+     `primary` is the navy the site is built around, `accent` the blue on every CTA. */
+  --color-brand-primary: #1a2b44;
+  --color-brand-secondary: #333333;
   --color-brand-text: #585858;
-  --color-brand-accent: #61ce70;
-  --color-brand-black: #000000;
-  --color-brand-white: #ffffff;
-  --color-brand-mist: #f4f4f4;
-  --color-brand-snow: #fcfcfc;
-  --color-brand-rust: #ce6542;
-  --color-brand-ember: #df7141;
+  --color-brand-accent: #096eef;
+  --color-brand-snow: #fafafa;
+  --color-brand-mist: #f5f5f5;
+  --color-brand-gold: #c9a227;
 
-  /* The LeadConnector widgets' own palette, matched by ContactForm.astro */
+  /* The LeadConnector widgets' own palette, matched by ContactForm.astro. Its
+     submit button is the kit's accent blue; the field grey is the widget's own. */
   --color-field-bg: #e9ecef;
   --color-field-placeholder: #afb8bc;
 
-  /* Elementor kit typography globals */
+  /* Elementor kit typography globals. Note that `text` — the body family, Roboto —
+     is what most headings on this site actually render in; `primary` is used by
+     fewer of them than the kit implies. */
   --font-primary: 'Inter', sans-serif;
   --font-secondary: 'Inter', sans-serif;
   --font-text: 'Roboto', sans-serif;

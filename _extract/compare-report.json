@@ -1,8 +1,134 @@
 [
   {
+    "path": "/404/",
+    "width": 1440,
+    "checked": 67,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/about/",
+    "width": 1440,
+    "checked": 111,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/category/uncategorized/",
+    "width": 1440,
+    "checked": 66,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/google-my-business-walkthrough/",
+    "width": 1440,
+    "checked": 90,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/guarantee/",
+    "width": 1440,
+    "checked": 76,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/home-2/",
+    "width": 1440,
+    "checked": 274,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/how-it-works/",
+    "width": 1440,
+    "checked": 103,
+    "diffs": [],
+    "extra": []
+  },
+  {
     "path": "/",
     "width": 1440,
     "checked": 362,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/privacy-policy/",
+    "width": 1440,
+    "checked": 220,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/schedule-a-call/",
+    "width": 1440,
+    "checked": 74,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/template/",
+    "width": 1440,
+    "checked": 86,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/top-8-things-to-grow/",
+    "width": 1440,
+    "checked": 66,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/404/",
+    "width": 900,
+    "checked": 67,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/about/",
+    "width": 900,
+    "checked": 111,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/category/uncategorized/",
+    "width": 900,
+    "checked": 66,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/google-my-business-walkthrough/",
+    "width": 900,
+    "checked": 90,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/guarantee/",
+    "width": 900,
+    "checked": 76,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/home-2/",
+    "width": 900,
+    "checked": 274,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/how-it-works/",
+    "width": 900,
+    "checked": 103,
     "diffs": [],
     "extra": []
   },
@@ -14,9 +140,114 @@
     "extra": []
   },
   {
+    "path": "/privacy-policy/",
+    "width": 900,
+    "checked": 220,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/schedule-a-call/",
+    "width": 900,
+    "checked": 74,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/template/",
+    "width": 900,
+    "checked": 86,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/top-8-things-to-grow/",
+    "width": 900,
+    "checked": 66,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/404/",
+    "width": 390,
+    "checked": 67,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/about/",
+    "width": 390,
+    "checked": 111,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/category/uncategorized/",
+    "width": 390,
+    "checked": 66,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/google-my-business-walkthrough/",
+    "width": 390,
+    "checked": 90,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/guarantee/",
+    "width": 390,
+    "checked": 76,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/home-2/",
+    "width": 390,
+    "checked": 274,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/how-it-works/",
+    "width": 390,
+    "checked": 103,
+    "diffs": [],
+    "extra": []
+  },
+  {
     "path": "/",
     "width": 390,
     "checked": 362,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/privacy-policy/",
+    "width": 390,
+    "checked": 220,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/schedule-a-call/",
+    "width": 390,
+    "checked": 74,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/template/",
+    "width": 390,
+    "checked": 86,
+    "diffs": [],
+    "extra": []
+  },
+  {
+    "path": "/top-8-things-to-grow/",
+    "width": 390,
+    "checked": 66,
     "diffs": [],
     "extra": []
   }
