@@ -46,8 +46,11 @@ const REWRITES: Rewrite[] = [
   // ---------------------------------------------------------------- bug 10
   {
     match: /^page-home-2$/,
-    from: 'data-from-value=""',
-    to: 'data-from-value="0"',
+    // Both halves matter, and only the second is what a visitor sees: Elementor
+    // renders the from-value as the element's text as well as its attribute, and it
+    // is the empty *text* that paints "$ B+" until the count-up starts.
+    from: '<span class="elementor-counter-number" data-duration="2000" data-to-value="19.9" data-from-value="" data-delimiter=","></span>',
+    to: '<span class="elementor-counter-number" data-duration="2000" data-to-value="19.9" data-from-value="0" data-delimiter=",">0</span>',
     why:
       'The first statistic ships with an empty from-value, so between first paint ' +
       'and the count-up the strip reads "$ B+". The other two ship 0.',
@@ -125,7 +128,133 @@ const REWRITES: Rewrite[] = [
     to: 'Life Insurance Industry Specialists',
     why: 'Third of the three industry labels on the page\'s credentials strip.',
   },
+
+  // ------------------------------------------------- other people's contact details
+  // The site publishes no phone number or email of its own, so there is nothing to
+  // substitute. Every one of these now routes to the contact paths the rest of the
+  // site already uses: the popup form (any `.contact-form` link opens it) and
+  // /schedule-a-call/.
+  {
+    match: /^page-about$/,
+    from: 'Action: Contact us today at hello@concretegrowthpros.com or call (615) 880-9511',
+    to: 'Action: <a class="contact-form" href="#">Contact us today</a>, or ' +
+      '<a href="/schedule-a-call/">schedule a call</a>.',
+    why:
+      'The call to action gave a different company\'s email and phone — ' +
+      'hello@concretegrowthpros.com and (615) 880-9511, from the concrete-marketing ' +
+      'site this page was copied from.',
+  },
+  {
+    match: /^page-privacy-policy$/,
+    from: '<p>By phone number: 615.488.4889</p>',
+    to: '<p>Through the contact form on this website, or by booking a call at ' +
+      '<a href="/schedule-a-call/">lifeagentgrowthsystems.com/schedule-a-call</a></p>',
+    why:
+      'The policy gave 615.488.4889 as the contact number — the same Franklin, TN ' +
+      'business as the entity named above it, not this brand. The postal address on ' +
+      'the next line is left alone with that entity, pending confirmation.',
+  },
+  {
+    match: /^page-google-my-business-walkthrough$/,
+    from: 'Enter the Life Agent Growth Systems email address:<strong> ' +
+      '<a href="mailto:rgs-clients@gmail.com">rgs-clients@gmail.com</a></strong>',
+    to: 'Enter the Life Agent Growth Systems email address we sent you.',
+    why:
+      'The step told clients to invite rgs-clients@gmail.com — the roofing brand\'s ' +
+      'Google account. Without the real address the instruction cannot be completed, ' +
+      'so it now points at the address the team sends out. NOTE: this needs the real ' +
+      'address to be genuinely useful; see the README.',
+  },
+  {
+    match: /^page-google-my-business-walkthrough$/,
+    from: 'feel free to contact us at <a href="mailto:support@jeremyb126.sg-host.com">' +
+      'support@jeremyb126.sg-host.com</a>.',
+    to: 'feel free to <a class="contact-form" href="#">contact us</a> or ' +
+      '<a href="/schedule-a-call/">book a call</a>.',
+    why: 'support@jeremyb126.sg-host.com is on a staging host that no longer resolves.',
+  },
 ];
+
+/**
+ * Elementor elements removed outright, by `data-id`.
+ *
+ * Placeholder content the client asked to have taken down. Removing rather than
+ * hiding, so it is not in the markup for a crawler to read either.
+ */
+const REMOVE: { match: RegExp; ids: string[]; why: string }[] = [
+  {
+    match: /^page-about$/,
+    ids: ['37b262a6'],
+    why:
+      'A whole unfinished section: an "About Us" label, an "Lorem Ipsum" heading, and ' +
+      'two stock portraits each captioned "I am text block. Click edit button to ' +
+      'change this text. Lorem ipsum dolor sit amet…". Removing the section rather ' +
+      'than just its text widgets, because the heading and the portraits are the ' +
+      'same placeholder and would read as broken on their own.',
+  },
+  {
+    match: /^page-how-it-works$/,
+    ids: ['2ca47ee', '8877ef7'],
+    why:
+      'The bodies of "Step 2 - Convert" and "Step 3: Evolve Online" are both the ' +
+      'stock filler *about* Lorem Ipsum ("It is a long established fact that a ' +
+      'reader will be distracted…"). Only Step 1 has real copy. Both steps keep ' +
+      'their headings and lose their bodies until real copy arrives.',
+  },
+];
+
+/**
+ * Cut one Elementor element out of a fragment, by `data-id`.
+ *
+ * Elementor's markup is regular enough to do this without a parser, but the element
+ * is not always a `<div>` — sections and inner sections are `<section>`, columns are
+ * `<div>`. So: find the start of the tag that carries the `data-id`, read its name,
+ * then walk forward counting that tag until the depth returns to zero. The scan
+ * honours quoted attribute values, which matters because `data-settings` carries a
+ * JSON blob and `srcset` carries commas and slashes.
+ *
+ * If the tags do not balance the fragment is returned untouched — better to leave a
+ * placeholder on the page than to truncate the rest of it.
+ */
+function removeElement(html: string, id: string): string {
+  const at = html.indexOf(`data-id="${id}"`);
+  if (at === -1) return html;
+  const start = html.lastIndexOf('<', at);
+  if (start === -1) return html;
+  const tag = /^<([a-zA-Z][\w-]*)/.exec(html.slice(start, start + 40))?.[1]?.toLowerCase();
+  if (!tag) return html;
+
+  const openRe = new RegExp(`^<${tag}[\\s/>]`, 'i');
+  const closeRe = new RegExp(`^</${tag}[\\s>]`, 'i');
+
+  let i = start;
+  let depth = 0;
+  while (i < html.length) {
+    if (html[i] !== '<') { i++; continue; }
+    const head = html.slice(i, i + tag.length + 3);
+    const isOpen = openRe.test(head);
+    const isClose = closeRe.test(head);
+    // Walk to this tag's '>', skipping anything inside a quoted attribute value.
+    let j = i + 1;
+    let quote = '';
+    while (j < html.length) {
+      const c = html[j];
+      if (quote) { if (c === quote) quote = ''; }
+      else if (c === '"' || c === "'") quote = c;
+      else if (c === '>') break;
+      j++;
+    }
+    if (j >= html.length) return html;
+    if (isClose) {
+      depth--;
+      if (depth === 0) return html.slice(0, start) + html.slice(j + 1);
+    } else if (isOpen && html[j - 1] !== '/') {
+      depth++;
+    }
+    i = j + 1;
+  }
+  return html;
+}
 
 /** Applies every rewrite that targets this fragment. */
 export function fixFragment(html: string, name: string): string {
@@ -134,6 +263,10 @@ export function fixFragment(html: string, name: string): string {
   for (const rule of REWRITES) {
     if (rule.match && !rule.match.test(name)) continue;
     out = typeof rule.from === 'string' ? out.split(rule.from).join(rule.to) : out.replace(rule.from, rule.to);
+  }
+  for (const rule of REMOVE) {
+    if (!rule.match.test(name)) continue;
+    for (const id of rule.ids) out = removeElement(out, id);
   }
   return out;
 }
@@ -207,6 +340,27 @@ export function fixSeoHead(html: string): string {
  * to apply quietly. The one-line change is in the README.
  */
 export const FIX_CSS = `
+/* The site-wide font fallback.
+
+   Elementor kit 11 sets no body font and no heading font, so everything the designer
+   did not style widget-by-widget inherited hello-elementor's
+   \`body { font-family: -apple-system, … }\` — 640 of 796 visible text elements, 80%
+   of the site, in the operating system's UI font while five webfont families sat
+   downloaded and unused.
+
+   These two rules apply the kit's own declared intent: its Text global is Roboto
+   (body) and its Primary global is Inter (headings). Specificity is deliberately
+   low — a class and a class-plus-element — so every per-widget family Elementor
+   compiled (\`.elementor-19 .elementor-element-7ecbbac .elementor-heading-title\`,
+   three classes) still wins. Nothing the designer chose is overridden. */
+.elementor-kit-11 { font-family: 'Roboto', sans-serif; }
+.elementor-kit-11 h1,
+.elementor-kit-11 h2,
+.elementor-kit-11 h3,
+.elementor-kit-11 h4,
+.elementor-kit-11 h5,
+.elementor-kit-11 h6 { font-family: 'Inter', sans-serif; }
+
 /* bug 13 — the popup card is fixed at 800px tall while its contents (40px of
    padding, a heading, a paragraph and the form) are taller, so the form's own
    submit button sat below the fold of a card that could not scroll. Let the card
@@ -219,6 +373,12 @@ export const FIX_CSS = `
 /* Our replacement form is a normal in-flow block, so the !important height the
    theme pins onto the embedded iframe must not apply to it. */
 #elementor-popup-modal-394 .popup-form .gm-form { height: auto; }
+
+/* /privacy-policy/ scrolls sideways on a phone. The policy pastes a full Adobe
+   support URL as its own link text, and nothing lets it wrap, so at 390px it runs
+   453px past the viewport and drags the whole page with it. Scoped to that page's
+   body class so no other link's wrapping changes. */
+.elementor-page-3 .elementor-widget-text-editor a { overflow-wrap: anywhere; }
 
 /* bug 11 — an Elementor Pro reviews carousel ships on the home page carrying three
    placeholder reviews ("John Doe", Elementor's own placeholder image). It is marked

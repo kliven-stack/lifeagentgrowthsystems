@@ -185,7 +185,7 @@ text.
 **36 comparisons (12 pages × 3 widths), 0 diffs**, against
 `PUBLIC_ORIGINAL_BUGS=keep npm run build` — the harness diffs against the live
 WordPress site, so it can only be meaningful against a build that still carries that
-site's bugs. `npm run functional` passes 137/137 on a normal build and 124/124 in
+site's bugs. `npm run functional` passes 142/142 on a normal build and 126/126 in
 `keep` mode, and `npm run audit` reports no broken internal reference at all on a
 normal build (one, the privacy policy's, in `keep` mode — which production has too).
 
@@ -212,124 +212,124 @@ roofinggrowthsystems.com, and before that of a concrete-marketing site.**
 
 ### Fixed
 
-1. **`/about/` addressed the wrong industry.** The heading read "Your Concrete
-   Marketing Specialists", the body opened "You're a concrete business owner", and
-   the credentials strip said "Concrete Industry Specialists". All three now say life
-   insurance. *(The page's other two problems are still open — see below.)*
+**Content and branding**
 
-2. **The home page's search snippet sold roofing.** Yoast derives descriptions from
+1. **`/about/` addressed the wrong industry.** "Your Concrete Marketing Specialists",
+   "You're a concrete business owner", "Concrete Industry Specialists" — all three now
+   say life insurance.
+
+2. **Placeholder copy was live on two indexed pages, and is now removed.** `/about/`
+   carried a whole unfinished section — an "About Us" label, a heading reading
+   "Lorem Ipsum", and two stock portraits each captioned "I am text block. Click edit
+   button to change this text. Lorem ipsum dolor sit amet…" (section `37b262a6`,
+   removed entire, because the heading and the portraits were the same placeholder
+   and would read as broken on their own). On `/how-it-works/`, the bodies of both
+   "Step 2 – Convert" **and** "Step 3: Evolve Online" were the stock filler *about*
+   Lorem Ipsum; only Step 1 has real copy. Both bodies are removed and both steps
+   keep their headings. **Those two steps now need real copy.**
+
+3. **Three sets of contact details belonged to other people.** `/about/` said
+   "Contact us today at hello@concretegrowthpros.com or call (615) 880-9511" — a
+   different company. `/google-my-business-walkthrough/` told clients to invite
+   `rgs-clients@gmail.com` and offered support at `support@jeremyb126.sg-host.com`, a
+   host that does not resolve. `/privacy-policy/` published `615.488.4889`. The site
+   has no contact address of its own, so all of them now route to the contact paths
+   the rest of the site already uses — the popup form and `/schedule-a-call/`.
+   **One still needs a real value: the Google Business step now reads "Enter the Life
+   Agent Growth Systems email address we sent you", which is only true once someone
+   sends it. Give us the address and it goes back in.**
+
+4. **The home page's search snippet sold roofing.** Yoast derives descriptions from
    the page body, so the meta description, `og:description`, `twitter:description`
    and the schema.org graph all read "Proven results. Guaranteed. We grow roofing
-   companies." — that is what Google showed for the home page. Rewritten from the
-   site's own copy. `/about/`'s and `/home-2/`'s stale descriptions likewise.
+   companies." Rewritten from the site's own copy, as were `/about/`'s and
+   `/home-2/`'s.
 
-3. **`/privacy-policy/` pointed at another client's site.** It defined the Website as
-   "Roofing Growth Systems, accessible from www.roofinggrowthsystems.com" — and wrote
-   that address without a scheme, so the browser resolved it against the current
-   directory and it 404'd. Both halves now name this site, over https.
+5. **`/privacy-policy/` pointed at another client's site** — it defined the Website
+   as "Roofing Growth Systems, accessible from www.roofinggrowthsystems.com", and
+   wrote that address without a scheme so the link 404'd. Both halves now name this
+   site, over https.
 
-4. **"RGS" on `/guarantee/` and `/google-my-business-walkthrough/`** — the roofing
-   brand's initials, in the terms of the performance guarantee and three times in the
-   Google Business onboarding steps. Now "Life Agent Growth Systems".
+6. **"RGS" on `/guarantee/` and `/google-my-business-walkthrough/`** — the roofing
+   brand's initials — now "Life Agent Growth Systems".
 
-5. **Seven of `/home-2/`'s eight images were hotlinked from a dead staging host.**
-   `jeremyb126.sg-host.com` no longer resolves (NXDOMAIN), and the URLs were `http://`
-   on an `https://` page, so they were blocked twice over. The same files are on this
-   site's own uploads — four at their original `2021/07` path, four re-uploaded under
-   `2025/02` — and now load from there. The eighth, `RoofHeader3.jpg`, is a roofing
-   hero image with no counterpart here; it is left pointing at the dead host, and is
-   the one item `npm run functional` asserts is still broken.
+**Layout, typography and behaviour**
 
-6. **Four `/home-2/` buttons linked to `http://jeremyb126.sg-host.com/#contact-us`**
-   instead of the `#contact-us` anchor on their own page — every one a dead link.
-   Now local anchors.
+7. **80% of the site rendered in the operating system's UI font.** Elementor kit 11
+   sets no body font and no heading font, so everything the designer did not style
+   widget-by-widget inherited hello-elementor's
+   `body { font-family: -apple-system, … }` — **640 of 796 visible text elements**,
+   including the home page's hero H2 and its four timeline steps, every footer
+   heading, all of `/privacy-policy/` and all of `/how-it-works/`. Five webfont
+   families were downloaded and used for the other 20%. Two rules now apply the kit's
+   own declared intent — Text = Roboto for body, Primary = Inter for headings — at
+   deliberately low specificity, so every per-widget family Elementor compiled still
+   wins and nothing the designer actually chose is overridden.
 
-7. **`/category/uncategorized/` invited indexing.** The site has no posts, so the
-   archive renders a bare "Category: Uncategorized" heading, and its robots directive
-   was `index, follow`. Now `noindex, follow`. It was already out of the sitemap.
+8. **`/privacy-policy/` scrolled sideways on a phone.** The policy pastes a full
+   Adobe support URL as its own link text with nothing to let it wrap; at 390px it
+   ran 453px past the viewport and dragged the page with it. Now wraps.
 
-8. **The chat bubble never loaded, on either site.** The GoHighLevel loader is a
-   LiteSpeed-cached copy of the vendor bundle, and it resolves its own assets
-   relative to itself — so it asked for
-   `/wp-content/litespeed/js/chat-widget/chat-widget.esm.js`, which LiteSpeed has
-   since purged and which 404s. The loader now points at
-   `widgets.leadconnectorhq.com`, which is the documented embed and cannot go stale.
+9. **The popup card could not show its own form.** `.dialog-message` is pinned at
+   800px tall while its contents — 40px of padding, a heading, a paragraph and a
+   720px form — are taller, and it could not scroll, so the submit button sat below
+   the fold. The card now sizes to its content, caps at the viewport, and scrolls.
 
-9. **A counter rendered empty.** `/home-2/`'s first statistic shipped with
-   `data-from-value=""`, so between first paint and the count-up the strip read
-   "$ B+". Now `0`, like the other two.
+10. **The chat bubble never loaded, on either site.** The GoHighLevel loader is a
+    LiteSpeed-cached copy of the vendor bundle and resolves its own assets relative
+    to itself, so it asked for
+    `/wp-content/litespeed/js/chat-widget/chat-widget.esm.js` — purged, and a 404.
+    It now points at `widgets.leadconnectorhq.com`, which is the documented embed.
 
-10. **A hidden placeholder reviews carousel shipped on every home-page load.** An
-    Elementor Pro reviews widget holding three "John Doe" reviews and Elementor's own
-    placeholder image, marked hidden at every breakpoint so it never rendered. Now
-    `display: none` outright, so it is not laid out or read out by assistive
-    technology either. Recommend deleting the widget in Elementor.
+11. **A counter rendered empty.** `/home-2/`'s first statistic shipped with an empty
+    from-value *and* empty text, so the strip read "$ B+" until the count-up ran.
+    Both now `0`.
 
-11. **The popup card could not show its own form.** `.dialog-message` is pinned at
-    800px tall while its contents — 40px of padding, a heading, a paragraph and a
-    720px form — are taller, and it could not scroll, so the submit button sat below
-    the fold. The card now sizes to its content, caps at the viewport, and scrolls.
+12. **A hidden placeholder reviews carousel shipped on every home-page load** — three
+    "John Doe" reviews and Elementor's placeholder image, marked hidden at every
+    breakpoint. Now removed from layout entirely. Recommend deleting the widget in
+    Elementor.
 
-### Still open — these need a decision or information only you have
+**Links, images and indexing**
 
-1. **The site-wide font fallback. This is the biggest visual issue on the site, and
-   it is not fixed, because fixing it changes how four fifths of the site looks.**
-   Elementor kit 11 sets no body font and no heading font, and hello-elementor's
-   `body { font-family: -apple-system, … }` fills the gap — so everything the
-   designer did not style widget-by-widget renders in the operating system's UI font.
-   Measured across the clone: **640 of 796 visible text elements, 80%.** That
-   includes the home page's hero H2 and all four timeline step headings, every
-   heading in the footer, all of `/privacy-policy/`, and all of `/how-it-works/`.
-   The site downloads five families (Inter, Roboto, Montserrat, Poppins, Fira Sans,
-   84 files) and uses them for the other 20%.
+13. **Seven of `/home-2/`'s eight images were hotlinked from a dead staging host.**
+    `jeremyb126.sg-host.com` no longer resolves, and the URLs were `http://` on an
+    `https://` page, so they were blocked twice over. The same files are on this
+    site's own uploads and now load from there. The eighth, `RoofHeader3.jpg`, is a
+    roofing hero image with no counterpart here; it is left pointing at the dead
+    host, and `npm run functional` asserts it is the only one.
 
-   The kit's own declared intent is Text = Roboto for body, Primary = Inter for
-   headings, so the one-line fix is to set those in Elementor's Theme Style — or here:
+14. **Four `/home-2/` buttons linked to `http://jeremyb126.sg-host.com/#contact-us`**
+    instead of the anchor on their own page. Now local anchors.
 
-   ```css
-   .elementor-kit-11 { font-family: 'Roboto', sans-serif; }
-   .elementor-kit-11 h1, .elementor-kit-11 h2, .elementor-kit-11 h3,
-   .elementor-kit-11 h4, .elementor-kit-11 h5, .elementor-kit-11 h6 {
-     font-family: 'Inter', sans-serif;
-   }
-   ```
+15. **`/home-2/` and `/template/` are retired.** Both 308 to `/` (`vercel.json`) and
+    both are out of the sitemap, so no inbound link breaks and neither stale page
+    stays in the index. `/top-8-things-to-grow/` and
+    `/google-my-business-walkthrough/` are kept as they were, per your call — the
+    latter is already `noindex` and out of the sitemap.
 
-   Worth showing the client both ways before deciding. `npm run functional` pins the
-   current number so this cannot change silently.
+16. **`/category/uncategorized/` invited indexing.** The site has no posts, so it
+    renders a bare heading; its robots directive was `index, follow` and is now
+    `noindex, follow`.
 
-2. **Placeholder copy is live on two indexed pages.** `/about/` carries an entire
-   Elementor default block — "About Us / Lorem Ipsum / I am text block. Click edit
-   button to change this text. Lorem ipsum dolor sit amet…" (widgets `3e34b7e8`,
-   `636da475`, `3054bbbc`). `/how-it-works/` uses the filler *about* Lorem Ipsum as
-   the body of "Step 2 – Convert" (widgets `2ca47ee`, `8877ef7`). Real copy needed.
+### Still open — these need information only you have
 
-3. **Three contact details belong to other people.** `/about/` still says "Contact us
-   today at hello@concretegrowthpros.com or call (615) 880-9511" — a different
-   company. `/google-my-business-walkthrough/` asks clients to invite
-   `rgs-clients@gmail.com` and offers support at `support@jeremyb126.sg-host.com`, a
-   host that does not resolve. `/privacy-policy/` carries `615.488.4889`. The site
-   publishes no contact address of its own anywhere, so there is nothing to
-   substitute: **what email and phone should these become?** (The only Life Agent
-   Growth Systems number anywhere in the markup is (863) 777-4769, in the lead form's
-   consent copy.)
+1. **An email address for the Google Business onboarding step.** It currently says
+   "Enter the Life Agent Growth Systems email address we sent you" in place of
+   `rgs-clients@gmail.com`. A real address makes the instruction self-contained
+   again. A public contact email and phone would also let items 3 above use the
+   client's own details instead of routing everything to the form.
 
-4. **The privacy policy's legal entity.** It names "Roofing Growth Systems, LLC, 2000
-   Mallory Lane STE 130-274, Franklin, Tn 37064" as the Company. Deliberately left
-   alone — one agency runs several of these niche brands, so this may well be the
-   correct operating entity, and it is not a detail to guess at. Please confirm.
+2. **The privacy policy's legal entity.** It names "Roofing Growth Systems, LLC, 2000
+   Mallory Lane STE 130-274, Franklin, Tn 37064" as the Company, and repeats that
+   postal address as the contact address. Deliberately left alone — one agency runs
+   several of these niche brands, so this may well be the correct operating entity,
+   and it is not a detail to guess at. Please confirm or replace.
 
-5. **Four leftover pages are published and indexed.** `/home-2/` is the old roofing
-   home page ("We grow roofing companies", testimonials credited "Roofing Growth
-   Systems Client", a product called "Sybrware", and two embeds from
-   `links.sybrware.com` which is NXDOMAIN so both are blank frames). `/template/` is
-   a page titled "Template" carrying a stray testimonial slider.
-   `/top-8-things-to-grow/` is a heading and nothing else. `/schedule-a-call/` is the
-   word "Calendar" above the booking widget.
-   `/google-my-business-walkthrough/` is a roofing-era onboarding page, already
-   `noindex` and orphaned out of the sitemap. **Delete, redirect to `/`, or keep and
-   `noindex`?** All are cloned as-is for now so no URL stops resolving at cutover.
+3. **Real copy for "Step 2 – Convert" and "Step 3: Evolve Online"** on
+   `/how-it-works/`, whose placeholder bodies were removed.
 
-6. **The home page's `#contact-us` anchor is orphaned.** The menu-anchor widget is
+4. **The home page's `#contact-us` anchor is orphaned.** The menu-anchor widget is
    there, but nothing on that page links to it — the header's "Contact Us" opens the
    popup instead. Harmless; noted so it is not mistaken for a migration slip.
 

@@ -18,7 +18,15 @@ const TYPES = {
 createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
 
+  // Two of vercel.json's redirects exist because the client asked for those pages to
+  // be retired (/home-2/, /template/). A `PUBLIC_ORIGINAL_BUGS=keep` build is there
+  // to be diffed against WordPress, where both pages still answer 200 — so honour
+  // them as pages, not redirects, in that mode.
+  const RETIRED = new Set(['/home-2', '/template']);
+  const keepBugs = process.env.PUBLIC_ORIGINAL_BUGS === 'keep';
+
   const hit = redirects.find((r) => {
+    if (keepBugs && RETIRED.has(r.source)) return false;
     if (r.source.replace(/\/$/, '') !== url.pathname.replace(/\/$/, '')) return false;
     return (r.has ?? []).every((h) => h.type === 'query' && url.searchParams.has(h.key));
   });

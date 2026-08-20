@@ -29,6 +29,16 @@
   ],
   "redirects": [
     {
+      "source": "/home-2",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/template",
+      "destination": "/",
+      "permanent": true
+    },
+    {
       "source": "/author/admin",
       "destination": "/",
       "permanent": true

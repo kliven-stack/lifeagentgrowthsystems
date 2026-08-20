@@ -7,6 +7,9 @@
  *   node scripts/functional.mjs
  */
 import { chromium } from 'playwright';
+import { readFile } from 'node:fs/promises';
+
+const DIST = new URL('../dist/', import.meta.url).pathname;
 
 const ORIGIN = process.env.CLONE_ORIGIN || 'http://localhost:4321';
 
@@ -203,29 +206,51 @@ for (const [width, trigger] of [[1440, 'desktop'], [390, 'burger']]) {
   await ctx.close();
 }
 
+/* ------------------------------------------------------- retired pages */
+// /home-2/ (the old roofing home page) and /template/ were retired at the client's
+// request: vercel.json 308s both to /. They are still built, so the pages the rest
+// of this file inspects are read off disk rather than over HTTP.
+const KEEP_BUGS = process.env.PUBLIC_ORIGINAL_BUGS === 'keep';
+const built = (path) => readFile(DIST + path, 'utf8');
+
+for (const path of ['/home-2/', '/template/']) {
+  const res = await fetch(ORIGIN + path, { redirect: 'manual' });
+  if (KEEP_BUGS) {
+    check(`retired: ${path} still answers as a page in keep mode`, res.status === 200, `${res.status}`);
+  } else {
+    check(`retired: ${path} redirects to /`,
+      res.status === 308 && res.headers.get('location') === '/', `${res.status} → ${res.headers.get('location')}`);
+  }
+}
+
 /* ---------------------------------------------------------------- counters */
 // /home-2/'s three counters. Two render their from-value server-side; the third
 // renders nothing at all, so without this one of them reads "$ B+".
 {
-  const { ctx, page } = await open('/home-2/');
-  const served = await (await fetch(ORIGIN + '/home-2/')).text();
+  const served = await built('home-2/index.html');
   const rendered = [...served.matchAll(/class="elementor-counter-number"[^>]*>([^<]*)</g)].map((m) => m[1]);
-  check('counter: served markup holds the from-values',
-    JSON.stringify(rendered) === JSON.stringify(['', '0', '0']), JSON.stringify(rendered));
+  // The from-values are server-rendered; one of the three is empty on WordPress, so
+  // that counter reads "$ B+" until the count-up runs. Fixed on a normal build.
+  check('counter: built markup holds the from-values',
+    JSON.stringify(rendered) === JSON.stringify(KEEP_BUGS ? ['', '0', '0'] : ['0', '0', '0']),
+    JSON.stringify(rendered));
 
-  await page.evaluate(() => document.querySelector('.elementor-counter').scrollIntoView({ block: 'center' }));
-  await page.waitForTimeout(2600);
-  const done = await page.$$eval('.elementor-counter-number', (els) => els.map((e) => e.textContent));
-  check('counter: counts up to the to-value',
-    JSON.stringify(done) === JSON.stringify(['19.9', '58', '75']), JSON.stringify(done));
-  await ctx.close();
+  if (KEEP_BUGS) {
+    const { ctx, page } = await open('/home-2/');
+    await page.evaluate(() => document.querySelector('.elementor-counter').scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(2600);
+    const done = await page.$$eval('.elementor-counter-number', (els) => els.map((e) => e.textContent));
+    check('counter: counts up to the to-value',
+      JSON.stringify(done) === JSON.stringify(['19.9', '58', '75']), JSON.stringify(done));
+    await ctx.close();
+  }
 }
 
 /* ---------------------------------------------------------------- menu anchor */
 // Nothing in the header points at it any more — the "Contact Us" item opens the
 // popup instead — but /home-2/ still has a button that does, and the widget has to
 // keep working for it (see the README: those buttons point at a dead host).
-{
+if (KEEP_BUGS) {
   const { ctx, page } = await open('/home-2/');
   check('anchor: the menu-anchor target exists', (await page.$$('#contact-us')).length === 1);
   // Settle the layout first. Elementor computes the anchor offset once, at click
@@ -559,14 +584,32 @@ for (const [width, expected] of [[1440, true], [900, true], [390, false]]) {
   // the designer did not style per-widget inherits hello-elementor's system stack.
   // Pinned to production's number so the clone keeps matching it, and so turning the
   // kit fonts on is a deliberate change rather than a silent one. See the README.
-  check('fonts: the site-wide fallback still matches production exactly',
-    await page.evaluate(() => {
-      const inSystemStack = (el) => /-apple-system/.test(getComputedStyle(el).fontFamily);
-      const all = [...document.querySelectorAll('body *')].filter((el) =>
-        el.offsetParent !== null
-        && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()));
-      return all.filter(inSystemStack).length === 155 && all.length === 207;
-    }));
+  // Elementor kit 11 sets no body and no heading font, so everything the designer did
+  // not style per-widget inherited hello-elementor's system stack — 155 of the home
+  // page's 207 text elements. In `keep` mode that is pinned to production's number;
+  // on a normal build the kit's own Text/Primary globals are applied and it goes to
+  // zero, without overriding anything the designer did choose.
+  const fallback = await page.evaluate(() => {
+    const all = [...document.querySelectorAll('body *')].filter((el) =>
+      el.offsetParent !== null
+      && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()));
+    const sys = all.filter((el) => /-apple-system/.test(getComputedStyle(el).fontFamily));
+    const families = new Set(all.map((el) => getComputedStyle(el).fontFamily.split(',')[0].replace(/["']/g, '')));
+    return { sys: sys.length, all: all.length, families: [...families] };
+  });
+  if (process.env.PUBLIC_ORIGINAL_BUGS === 'keep') {
+    check('fonts: the site-wide fallback still matches production exactly',
+      fallback.sys === 155 && fallback.all === 207, `${fallback.sys}/${fallback.all}`);
+  } else {
+    check('fix: nothing falls back to the system font any more',
+      fallback.sys === 0 && fallback.all === 207, `${fallback.sys}/${fallback.all}`);
+    check('fix: the kit\'s own families are what render',
+      fallback.families.every((f) => ['Roboto', 'Inter', 'Montserrat', 'Poppins', 'Fira Sans'].includes(f)),
+      fallback.families.join(', '));
+    check('fix: explicitly-styled headings keep the family the designer chose',
+      await page.$eval('[data-id="7ecbbac"] .elementor-heading-title',
+        (h) => getComputedStyle(h).fontFamily.includes('Roboto')));
+  }
   await ctx.close();
 }
 
@@ -581,23 +624,20 @@ if (process.env.PUBLIC_ORIGINAL_BUGS !== 'keep') {
       && !served.includes('litespeed/js/3f6ed5ab'));
   }
   {
-    const served = await (await fetch(ORIGIN + '/home-2/')).text();
-    check('fix: no counter ships an empty from-value', !served.includes('data-from-value=""'));
+    // Read off disk: the page is built but retired behind a redirect.
+    const served = await built('home-2/index.html');
     check('fix: only the one image with no replacement still points at the dead host',
       (served.match(/jeremyb126\.sg-host\.com/g) || []).length === 1
       && served.includes('sg-host.com/wp-content/uploads/2021/07/RoofHeader3.jpg'));
     check('fix: the #contact-us buttons point at their own page',
       !served.includes('sg-host.com/#contact-us'));
-  }
-  {
-    const { ctx, page } = await open('/home-2/');
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await page.waitForTimeout(1200);
-    check('fix: the re-pointed images all decode', await page.evaluate(() =>
-      [...document.images]
-        .filter((i) => /Calendly|ClickFunnels|MailChimp|Reputation|Communication-Callout|GuaranteeBadage|Marketing-Callout|Scheduling/.test(i.src))
-        .every((i) => i.complete && i.naturalWidth > 0)));
-    await ctx.close();
+    check('fix: the re-pointed images exist in the build', await Promise.all(
+      ['2021/07/Calendly-1.png', '2021/07/ClickFunnels-1.png', '2021/07/MailChimp-1.png',
+       '2021/07/Reputation-1.png', '2025/02/Communication-Callout4-1.png',
+       '2025/02/GuaranteeBadage-02-01.png', '2025/02/Marketing-Callout-2.png',
+       '2025/02/Scheduling-1.png']
+        .map((f) => readFile(DIST + 'wp-content/uploads/' + f).then(() => true, () => false)),
+    ).then((r) => r.every(Boolean)));
   }
   {
     const served = await (await fetch(ORIGIN + '/')).text();
@@ -624,8 +664,44 @@ if (process.env.PUBLIC_ORIGINAL_BUGS !== 'keep') {
   {
     const { ctx, page } = await open('/about/');
     check('fix: /about/ addresses life insurance agents, not concrete businesses',
-      await page.evaluate(() => !/concrete business owner|Concrete Marketing/i.test(document.body.innerText)));
+      await page.evaluate(() => !/concrete/i.test(document.body.innerText)));
+    check('fix: /about/ carries no placeholder copy and no other company\'s contacts',
+      await page.evaluate(() => {
+        const t = document.body.innerText;
+        return !/lorem ipsum|I am text block/i.test(t)
+          && !/concretegrowthpros|\(615\) 880-9511/.test(t);
+      }));
+    check('fix: the /about/ CTA routes to the contact form and the booking page',
+      (await page.$$('a.contact-form[href="#"]')).length >= 1
+      && (await page.$$('a[href="/schedule-a-call/"]')).length >= 1);
     await ctx.close();
+  }
+  {
+    const { ctx, page } = await open('/how-it-works/');
+    check('fix: the Lorem Ipsum step bodies are gone, headings kept',
+      await page.evaluate(() => {
+        const t = document.body.innerText;
+        return !/lorem ipsum/i.test(t)
+          && /Step 2 - Convert/.test(t) && /Step 3: Evolve Online/.test(t);
+      }));
+    await ctx.close();
+  }
+  {
+    // Production scrolls 453px sideways here at 390px: the policy pastes a full Adobe
+    // support URL as its own link text and nothing lets it wrap.
+    const { ctx, page } = await open('/privacy-policy/', 390, 844);
+    await page.evaluate(() => document.fonts.ready);
+    check('fix: /privacy-policy/ no longer scrolls sideways on a phone',
+      await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1));
+    await ctx.close();
+  }
+  {
+    const served = await built('google-my-business-walkthrough/index.html');
+    check('fix: the onboarding page names no dead or foreign addresses',
+      !/rgs-clients@gmail|jeremyb126\.sg-host/.test(served));
+    const pp = await built('privacy-policy/index.html');
+    check('fix: the policy no longer publishes the other business\'s phone number',
+      !pp.includes('615.488.4889'));
   }
   {
     const { ctx, page } = await open('/');
