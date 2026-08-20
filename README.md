@@ -78,9 +78,10 @@ LiteSpeed's lazy-load rewrite is undone **at extract time** instead: `data-src` 
 URLs, same declared dimensions, same rendering as production's post-init DOM, one
 fewer script, and no placeholder flash.
 
-The GoHighLevel chat loader is kept as-is; it is the client's own property and
-outlives the WordPress install. `PUBLIC_CHAT_WIDGET=off` removes it. (It does not
-actually render — see bug 9.)
+The GoHighLevel chat loader is kept; it is the client's own property and outlives the
+WordPress install. `PUBLIC_CHAT_WIDGET=off` removes it. Its `src` is repointed at the
+vendor, because the WordPress copy asks for an asset that no longer exists — fixed
+bug 8.
 
 ---
 
@@ -113,7 +114,7 @@ deploy before the endpoint exists never ships a form that goes nowhere.
 
 The booking widgets — the calendar on `/schedule-a-call/` and the pair on the
 orphaned `/home-2/` — are **not** replaced. They are appointment calendars, not
-contact forms. See bug 2 for the state of the `/home-2/` pair.
+contact forms. Both `/home-2/` widgets come from a host that no longer resolves; see the open items.
 
 ---
 
@@ -128,6 +129,7 @@ Everything is optional; the defaults reproduce the WordPress site.
 | `PUBLIC_FORM_MODE` | `growthmap` | `embed` forces the original iframes back |
 | `PUBLIC_WEBFONTS` | `on` | `off` drops the Google fonts |
 | `PUBLIC_CHAT_WIDGET` | `on` | `off` drops the GoHighLevel chat loader |
+| `PUBLIC_ORIGINAL_BUGS` | *(empty)* | `keep` reproduces the WordPress site's own bugs instead of fixing them — what `npm run compare` needs |
 
 `PUBLIC_WEBFONTS` defaults to **on** here, unlike the sibling roofinggrowthsystems
 clone. That site's font stylesheets address their `.woff2` files over `http://` on an
@@ -153,7 +155,8 @@ npm run media               # -> public/wp-content/
 npm run images              # re-encode uploads in place, same dimensions
 
 # verification
-npm run compare             # computed-style + box diff vs production @1440/900/390
+# the fidelity diff needs a build that still carries the original site's bugs
+PUBLIC_ORIGINAL_BUGS=keep npm run build && npm run compare
 npm run functional          # behavioural assertions against dist/
 npm run audit               # every internal href/src/url() resolves in dist/
 npm run inspect -- /about/  # dump the live post-init DOM
@@ -179,9 +182,12 @@ Elementor element by its `data-id` plus the theme-rendered leaves in document or
 position, size, font, colour, background, display, padding, margin, text-align and
 text.
 
-**36 comparisons (12 pages × 3 widths), 0 diffs.** `npm run functional` passes
-134/134 with an endpoint configured and 124/124 without. `npm run audit` reports no
-broken internal reference that production does not already have.
+**36 comparisons (12 pages × 3 widths), 0 diffs**, against
+`PUBLIC_ORIGINAL_BUGS=keep npm run build` — the harness diffs against the live
+WordPress site, so it can only be meaningful against a build that still carries that
+site's bugs. `npm run functional` passes 137/137 on a normal build and 124/124 in
+`keep` mode, and `npm run audit` reports no broken internal reference at all on a
+normal build (one, the privacy policy's, in `keep` mode — which production has too).
 
 The lead widgets are blocked on both sides by default — their host resets headless
 traffic at random, and a run where one side's resizer handshake completes and the
@@ -191,98 +197,141 @@ three widths that way too.
 
 ---
 
-## Original-site bugs, cloned faithfully
+## Original-site bugs
 
-Everything here is reproduced as production behaves. Nothing in this list is a
-migration defect — each is a decision for the client.
+The clone was first built to reproduce production exactly, bugs included, and every
+defect found was recorded. The client then asked for them to be fixed, so most are
+now fixed — in `src/lib/fixes.ts`, not by editing `src/fragments/`, because
+`npm run extract` rewrites the fragments from the crawl and would undo the edits.
 
-**The headline: this site is an incompletely rebranded copy of
-roofinggrowthsystems.com, and before that of a concrete-marketing site.** Bugs 1–5
-are all facets of that, and several are live on indexed pages.
+`PUBLIC_ORIGINAL_BUGS=keep` turns every fix back off. `npm run compare` needs that,
+since it diffs against the live WordPress site.
 
-1. **`/about/` is still a concrete company's page.** The heading reads "Your
-   Concrete Marketing Specialists", the body opens "You're a concrete business owner
-   and you want to grow your business", and the call to action gives a different
-   company's contact details: `hello@concretegrowthpros.com` and (615) 880-9511. The
-   page is indexed and linked from the main nav. **This is the most commercially
-   significant item in this list.**
+**The context for most of this list: the site is an incompletely rebranded copy of
+roofinggrowthsystems.com, and before that of a concrete-marketing site.**
 
-2. **`/home-2/` is the old roofing home page, published and indexed.** "We grow
-   roofing companies. No hassle. No bull.", testimonials credited to "Roofing Growth
-   Systems Client", and a product called "Sybrware". It is in the Yoast sitemap. It
-   is also broken three ways over: its eight images are hotlinked from
-   `jeremyb126.sg-host.com`, a SiteGround staging host that no longer resolves
-   (NXDOMAIN), so they are broken on the live site; its two embedded widgets come
-   from `links.sybrware.com`, also NXDOMAIN, so both are blank frames; and four of
-   its buttons point at `http://jeremyb126.sg-host.com/#contact-us` instead of the
-   `#contact-us` anchor on their own page. **Recommend deleting the page.**
+### Fixed
 
-3. **`/privacy-policy/` names the wrong company.** The policy identifies the operator
-   as "Roofing Growth Systems, LLC, 2000 Mallory Lane STE 130-274, Franklin, TN" and
-   the website as "Roofing Growth Systems, accessible from
-   www.roofinggrowthsystems.com". That link is also written without a scheme, so the
-   browser resolves it relative to the current directory and it 404s — on WordPress
-   and here. `scripts/audit.mjs` lists it as known-broken so it cannot quietly become
-   a regression. Fix = rewrite the policy for the right entity.
+1. **`/about/` addressed the wrong industry.** The heading read "Your Concrete
+   Marketing Specialists", the body opened "You're a concrete business owner", and
+   the credentials strip said "Concrete Industry Specialists". All three now say life
+   insurance. *(The page's other two problems are still open — see below.)*
 
-4. **`/guarantee/` refers to the client as "RGS"** in the terms of the performance
-   guarantee.
+2. **The home page's search snippet sold roofing.** Yoast derives descriptions from
+   the page body, so the meta description, `og:description`, `twitter:description`
+   and the schema.org graph all read "Proven results. Guaranteed. We grow roofing
+   companies." — that is what Google showed for the home page. Rewritten from the
+   site's own copy. `/about/`'s and `/home-2/`'s stale descriptions likewise.
 
-5. **`/google-my-business-walkthrough/` is a roofing-era instruction page.** It tells
-   customers to add "RGS" as a manager, gives `rgs-clients@gmail.com` as the address
-   to invite, and offers support at `support@jeremyb126.sg-host.com` — a dead host.
-   It is `noindex, nofollow` and orphaned: absent from the sitemap and unlinked from
-   every page, so it was only found by enumerating the REST API. Cloned so the URL
-   keeps resolving; **recommend deleting it**, or rewriting the three identifiers.
+3. **`/privacy-policy/` pointed at another client's site.** It defined the Website as
+   "Roofing Growth Systems, accessible from www.roofinggrowthsystems.com" — and wrote
+   that address without a scheme, so the browser resolved it against the current
+   directory and it 404'd. Both halves now name this site, over https.
 
-6. **Three published pages are placeholders or near-empty**, all indexed and all in
-   the sitemap: `/template/` (a page titled "Template", carrying a stray testimonial
-   slider), `/top-8-things-to-grow/` (a heading and nothing else), and
-   `/schedule-a-call/` (the word "Calendar" above the booking embed).
+4. **"RGS" on `/guarantee/` and `/google-my-business-walkthrough/`** — the roofing
+   brand's initials, in the terms of the performance guarantee and three times in the
+   Google Business onboarding steps. Now "Life Agent Growth Systems".
 
-7. **`/category/uncategorized/` is an empty archive that invites indexing.** The site
-   has no posts at all, so the page renders a bare "Category: Uncategorized" heading —
-   and its robots directive is `index, follow`. It is not in the sitemap. Cloned so
-   the URL keeps resolving; the archive should be `noindex` or the category deleted.
+5. **Seven of `/home-2/`'s eight images were hotlinked from a dead staging host.**
+   `jeremyb126.sg-host.com` no longer resolves (NXDOMAIN), and the URLs were `http://`
+   on an `https://` page, so they were blocked twice over. The same files are on this
+   site's own uploads — four at their original `2021/07` path, four re-uploaded under
+   `2025/02` — and now load from there. The eighth, `RoofHeader3.jpg`, is a roofing
+   hero image with no counterpart here; it is left pointing at the dead host, and is
+   the one item `npm run functional` asserts is still broken.
 
-8. **Three headings have no font-family anywhere in the cascade** and fall back to
-   the system stack while every other heading renders in Roboto: the home page's hero
-   H2, "The AI-Driven Growth System for Life Insurance Agents" — the largest piece of
-   type on the site — and the footer's two column headings, "QUICK LINKS" and
-   "SERVICES" (playbook §3.8). A test asserts this stays matched to production, so
-   fixing it is a deliberate change rather than a silent one. Fix = set the family on
-   those three widgets in Elementor.
+6. **Four `/home-2/` buttons linked to `http://jeremyb126.sg-host.com/#contact-us`**
+   instead of the `#contact-us` anchor on their own page — every one a dead link.
+   Now local anchors.
 
-9. **The chat bubble does not load, on either site.** The GoHighLevel loader asks for
-   `/wp-content/litespeed/js/chat-widget/chat-widget.esm.js`; LiteSpeed cached the
-   vendor bundle under that path and has since purged it, so the request 404s on
-   production. The clone serves the same 404 and the bubble never appears. Fix =
-   point the loader at `widgets.leadconnectorhq.com` directly, or purge and rebuild
-   the LiteSpeed cache before cutover.
+7. **`/category/uncategorized/` invited indexing.** The site has no posts, so the
+   archive renders a bare "Category: Uncategorized" heading, and its robots directive
+   was `index, follow`. Now `noindex, follow`. It was already out of the sitemap.
 
-10. **One home-page counter renders empty.** On `/home-2/` the first statistic ships
-    with `data-from-value=""`, so between first paint and the count-up the strip
-    reads "$ B+". The other two ship `0`. Moot if the page is deleted.
+8. **The chat bubble never loaded, on either site.** The GoHighLevel loader is a
+   LiteSpeed-cached copy of the vendor bundle, and it resolves its own assets
+   relative to itself — so it asked for
+   `/wp-content/litespeed/js/chat-widget/chat-widget.esm.js`, which LiteSpeed has
+   since purged and which 404s. The loader now points at
+   `widgets.leadconnectorhq.com`, which is the documented embed and cannot go stale.
 
-11. **A reviews widget is hidden at every breakpoint.** The home page carries an
-    Elementor Pro reviews carousel with three placeholder reviews — "John Doe" and
-    Elementor's own placeholder image — marked `elementor-hidden-desktop`,
-    `-tablet` and `-mobile`, so it never renders anywhere. It is invisible weight and
-    its markup is in the page source. Recommend deleting the widget.
+9. **A counter rendered empty.** `/home-2/`'s first statistic shipped with
+   `data-from-value=""`, so between first paint and the count-up the strip read
+   "$ B+". Now `0`, like the other two.
 
-12. **The home page's `#contact-us` anchor is orphaned.** The menu-anchor widget is
-    there, but nothing on the page links to it any more — the header's "Contact Us"
-    item opens the popup instead. Harmless; noted so it is not mistaken for a
-    migration slip.
+10. **A hidden placeholder reviews carousel shipped on every home-page load.** An
+    Elementor Pro reviews widget holding three "John Doe" reviews and Elementor's own
+    placeholder image, marked hidden at every breakpoint so it never rendered. Now
+    `display: none` outright, so it is not laid out or read out by assistive
+    technology either. Recommend deleting the widget in Elementor.
 
-13. **The popup's form is taller than the card that holds it.** Custom CSS pins
-    `.popup-form iframe` to 720px (820px at ≤767) inside a `.dialog-message` fixed at
-    800px, and the card also carries 40px of top padding plus a heading and a
-    paragraph above the form. The card scrolls rather than growing. Once the
-    Growthmap endpoint is set our form is a normal in-flow block in the same card, so
-    it is worth a look at that breakpoint after the first deploy.
+11. **The popup card could not show its own form.** `.dialog-message` is pinned at
+    800px tall while its contents — 40px of padding, a heading, a paragraph and a
+    720px form — are taller, and it could not scroll, so the submit button sat below
+    the fold. The card now sizes to its content, caps at the viewport, and scrolls.
 
----
+### Still open — these need a decision or information only you have
+
+1. **The site-wide font fallback. This is the biggest visual issue on the site, and
+   it is not fixed, because fixing it changes how four fifths of the site looks.**
+   Elementor kit 11 sets no body font and no heading font, and hello-elementor's
+   `body { font-family: -apple-system, … }` fills the gap — so everything the
+   designer did not style widget-by-widget renders in the operating system's UI font.
+   Measured across the clone: **640 of 796 visible text elements, 80%.** That
+   includes the home page's hero H2 and all four timeline step headings, every
+   heading in the footer, all of `/privacy-policy/`, and all of `/how-it-works/`.
+   The site downloads five families (Inter, Roboto, Montserrat, Poppins, Fira Sans,
+   84 files) and uses them for the other 20%.
+
+   The kit's own declared intent is Text = Roboto for body, Primary = Inter for
+   headings, so the one-line fix is to set those in Elementor's Theme Style — or here:
+
+   ```css
+   .elementor-kit-11 { font-family: 'Roboto', sans-serif; }
+   .elementor-kit-11 h1, .elementor-kit-11 h2, .elementor-kit-11 h3,
+   .elementor-kit-11 h4, .elementor-kit-11 h5, .elementor-kit-11 h6 {
+     font-family: 'Inter', sans-serif;
+   }
+   ```
+
+   Worth showing the client both ways before deciding. `npm run functional` pins the
+   current number so this cannot change silently.
+
+2. **Placeholder copy is live on two indexed pages.** `/about/` carries an entire
+   Elementor default block — "About Us / Lorem Ipsum / I am text block. Click edit
+   button to change this text. Lorem ipsum dolor sit amet…" (widgets `3e34b7e8`,
+   `636da475`, `3054bbbc`). `/how-it-works/` uses the filler *about* Lorem Ipsum as
+   the body of "Step 2 – Convert" (widgets `2ca47ee`, `8877ef7`). Real copy needed.
+
+3. **Three contact details belong to other people.** `/about/` still says "Contact us
+   today at hello@concretegrowthpros.com or call (615) 880-9511" — a different
+   company. `/google-my-business-walkthrough/` asks clients to invite
+   `rgs-clients@gmail.com` and offers support at `support@jeremyb126.sg-host.com`, a
+   host that does not resolve. `/privacy-policy/` carries `615.488.4889`. The site
+   publishes no contact address of its own anywhere, so there is nothing to
+   substitute: **what email and phone should these become?** (The only Life Agent
+   Growth Systems number anywhere in the markup is (863) 777-4769, in the lead form's
+   consent copy.)
+
+4. **The privacy policy's legal entity.** It names "Roofing Growth Systems, LLC, 2000
+   Mallory Lane STE 130-274, Franklin, Tn 37064" as the Company. Deliberately left
+   alone — one agency runs several of these niche brands, so this may well be the
+   correct operating entity, and it is not a detail to guess at. Please confirm.
+
+5. **Four leftover pages are published and indexed.** `/home-2/` is the old roofing
+   home page ("We grow roofing companies", testimonials credited "Roofing Growth
+   Systems Client", a product called "Sybrware", and two embeds from
+   `links.sybrware.com` which is NXDOMAIN so both are blank frames). `/template/` is
+   a page titled "Template" carrying a stray testimonial slider.
+   `/top-8-things-to-grow/` is a heading and nothing else. `/schedule-a-call/` is the
+   word "Calendar" above the booking widget.
+   `/google-my-business-walkthrough/` is a roofing-era onboarding page, already
+   `noindex` and orphaned out of the sitemap. **Delete, redirect to `/`, or keep and
+   `noindex`?** All are cloned as-is for now so no URL stops resolving at cutover.
+
+6. **The home page's `#contact-us` anchor is orphaned.** The menu-anchor widget is
+   there, but nothing on that page links to it — the header's "Contact Us" opens the
+   popup instead. Harmless; noted so it is not mistaken for a migration slip.
 
 ## Deployment
 
@@ -301,5 +350,9 @@ resolving, and kept out of the sitemap because production keeps them out.
 Then set `PUBLIC_CONTACT_ENDPOINT` in the project's environment variables and
 redeploy to hand both forms over to Growthmap. A human should submit each one once
 end to end.
+
+Do **not** set `PUBLIC_ORIGINAL_BUGS` in the Vercel project — it exists so the
+fidelity harness can still measure against WordPress, and setting it in production
+would ship the original site's bugs back.
 
 Going live on the real domain: playbook §8.

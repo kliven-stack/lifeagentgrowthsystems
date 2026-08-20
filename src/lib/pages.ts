@@ -1,4 +1,5 @@
 import pagesData from '../data/pages.json';
+import { fixFragment } from './fixes';
 
 export interface CssRef { type: 'file'; name: string }
 export interface Favicon { rel: string; href: string; sizes: string | null }
@@ -41,13 +42,15 @@ const fragments = new Map<string, string>(
 );
 
 /** The GoHighLevel chat bubble WordPress prints on every page (may be empty). */
-export const chatWidgetHtml = fragments.get('chat-widget') ?? '';
+export const chatWidgetHtml = fixFragment(fragments.get('chat-widget') ?? '', 'chat-widget');
 
 export function fragment(name: string | null): string {
   if (!name) return '';
   const html = fragments.get(name);
   if (html === undefined) throw new Error(`Missing fragment: ${name}`);
-  return html;
+  // Corrections to the WordPress site's own bugs, applied here rather than in
+  // src/fragments/ so that `npm run extract` cannot undo them (see lib/fixes.ts).
+  return fixFragment(html, name);
 }
 
 export const pageByPath = new Map(pages.map((p) => [p.path, p]));

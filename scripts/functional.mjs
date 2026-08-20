@@ -228,6 +228,15 @@ for (const [width, trigger] of [[1440, 'desktop'], [390, 'burger']]) {
 {
   const { ctx, page } = await open('/home-2/');
   check('anchor: the menu-anchor target exists', (await page.$$('#contact-us')).length === 1);
+  // Settle the layout first. Elementor computes the anchor offset once, at click
+  // time, from wherever the target is then — so a page still growing as its images
+  // decode lands short by however much it grew. The clone repairs seven broken
+  // images on this page, which is 59px of growth, so measuring before it settles
+  // reports an offset error that a real visitor never sees.
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await page.waitForTimeout(2000);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(800);
   await page.evaluate(() => {
     const a = [...document.querySelectorAll('a')].find((n) => n.getAttribute('href') === '#contact-us');
     a.click();
@@ -504,9 +513,15 @@ for (const [width, expected] of [[1440, true], [900, true], [390, false]]) {
 {
   const served = await (await fetch(ORIGIN + '/')).text();
   const tag = /<script[^>]*data-resources-url="[^"]*chat-widget[^"]*"[^>]*>/.exec(served)?.[0] || '';
+  // The src differs by mode: WordPress serves a LiteSpeed-cached copy of the vendor
+  // bundle (which is bug 9 — it resolves its own assets to a path that 404s), and
+  // the fixed build points at GoHighLevel's own loader instead.
+  const expectedSrc = process.env.PUBLIC_ORIGINAL_BUGS === 'keep'
+    ? '/wp-content/litespeed/js/'
+    : 'https://widgets.leadconnectorhq.com/loader.js';
   check('chat: every page serves the GoHighLevel loader with the account widget id',
     tag.includes('data-widget-id="67aeeea8a81d1c5690d7660c"')
-    && tag.includes('/wp-content/litespeed/js/'), tag.slice(0, 60));
+    && tag.includes(expectedSrc), tag.slice(0, 90));
 }
 
 /* ---------------------------------------------------------------- images */
@@ -538,19 +553,111 @@ for (const [width, expected] of [[1440, true], [900, true], [390, false]]) {
     await page.$eval('[data-id="7ecbbac"] .elementor-heading-title',
       (h) => getComputedStyle(h).fontFamily.includes('Roboto')));
 
-  // Original-site bug, cloned faithfully (playbook §3.8): three headings have no
-  // font-family at any level of the cascade and fall back to the system stack —
-  // the home page's hero H2 and the footer's two column headings. Asserted so the
-  // clone keeps matching production, and so a future fix is a deliberate change
-  // rather than a silent one. See the README.
-  check('fonts: exactly the three headings production leaves unstyled are unstyled',
+  // Original-site bug, cloned faithfully (playbook §3.8) and NOT yet fixed, because
+  // fixing it changes the typography of four fifths of the site and that is the
+  // client's call: Elementor kit 11 sets no body and no heading font, so everything
+  // the designer did not style per-widget inherits hello-elementor's system stack.
+  // Pinned to production's number so the clone keeps matching it, and so turning the
+  // kit fonts on is a deliberate change rather than a silent one. See the README.
+  check('fonts: the site-wide fallback still matches production exactly',
     await page.evaluate(() => {
-      const unstyled = [...document.querySelectorAll('h1, h2, h3')]
-        .filter((h) => /-apple-system/.test(getComputedStyle(h).fontFamily))
-        .map((h) => h.closest('[data-id]')?.dataset.id);
-      return JSON.stringify(unstyled) === JSON.stringify(['6342cf5', '7e7fb9c7', '67439af']);
+      const inSystemStack = (el) => /-apple-system/.test(getComputedStyle(el).fontFamily);
+      const all = [...document.querySelectorAll('body *')].filter((el) =>
+        el.offsetParent !== null
+        && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()));
+      return all.filter(inSystemStack).length === 155 && all.length === 207;
     }));
   await ctx.close();
+}
+
+/* ------------------------------------------------------- original-bug fixes */
+// Only meaningful on a normal build; `PUBLIC_ORIGINAL_BUGS=keep` turns them all off
+// so the fidelity harness can still diff against the live WordPress site.
+if (process.env.PUBLIC_ORIGINAL_BUGS !== 'keep') {
+  {
+    const served = await (await fetch(ORIGIN + '/')).text();
+    check('fix: the chat loader points at the vendor, not the purged LiteSpeed copy',
+      served.includes('https://widgets.leadconnectorhq.com/loader.js')
+      && !served.includes('litespeed/js/3f6ed5ab'));
+  }
+  {
+    const served = await (await fetch(ORIGIN + '/home-2/')).text();
+    check('fix: no counter ships an empty from-value', !served.includes('data-from-value=""'));
+    check('fix: only the one image with no replacement still points at the dead host',
+      (served.match(/jeremyb126\.sg-host\.com/g) || []).length === 1
+      && served.includes('sg-host.com/wp-content/uploads/2021/07/RoofHeader3.jpg'));
+    check('fix: the #contact-us buttons point at their own page',
+      !served.includes('sg-host.com/#contact-us'));
+  }
+  {
+    const { ctx, page } = await open('/home-2/');
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(1200);
+    check('fix: the re-pointed images all decode', await page.evaluate(() =>
+      [...document.images]
+        .filter((i) => /Calendly|ClickFunnels|MailChimp|Reputation|Communication-Callout|GuaranteeBadage|Marketing-Callout|Scheduling/.test(i.src))
+        .every((i) => i.complete && i.naturalWidth > 0)));
+    await ctx.close();
+  }
+  {
+    const served = await (await fetch(ORIGIN + '/')).text();
+    check('fix: the home page snippet no longer sells roofing',
+      !/grow roofing companies/.test(served)
+      && /<meta name="description" content="[^"]*life insurance agents/.test(served));
+  }
+  {
+    const served = await (await fetch(ORIGIN + '/privacy-policy/')).text();
+    check('fix: the policy names this website, over https',
+      served.includes('refers to Life Agent Growth Systems, accessible from')
+      && !served.includes('href="www.roofinggrowthsystems.com"'));
+  }
+  {
+    const g = await (await fetch(ORIGIN + '/guarantee/')).text();
+    const w = await (await fetch(ORIGIN + '/google-my-business-walkthrough/')).text();
+    check('fix: no "RGS" left on the guarantee or the onboarding page',
+      !/\bRGS\b/.test(g) && !/\bRGS\b/.test(w));
+  }
+  {
+    const served = await (await fetch(ORIGIN + '/category/uncategorized/')).text();
+    check('fix: the empty archive is noindex', /content="noindex, follow/.test(served));
+  }
+  {
+    const { ctx, page } = await open('/about/');
+    check('fix: /about/ addresses life insurance agents, not concrete businesses',
+      await page.evaluate(() => !/concrete business owner|Concrete Marketing/i.test(document.body.innerText)));
+    await ctx.close();
+  }
+  {
+    const { ctx, page } = await open('/');
+    check('fix: the hidden placeholder reviews carousel is gone', await page.evaluate(() => {
+      const el = document.querySelector('[data-widget_type="reviews.default"]');
+      return !el || getComputedStyle(el).display === 'none';
+    }));
+    await ctx.close();
+  }
+  // The popup card was fixed at 800px with taller content and no way to scroll.
+  for (const width of [1440, 390]) {
+    const { ctx, page } = await open('/about/', width, 900);
+    const CONTACT = width <= 767
+      ? `${HEADER} nav.elementor-nav-menu--dropdown li.contact-form > a`
+      : `${HEADER} nav.elementor-nav-menu--main li.contact-form > a`;
+    if (width <= 767) {
+      await page.locator(`${HEADER} .elementor-menu-toggle`).first().click();
+      await page.waitForTimeout(500);
+    }
+    await page.locator(CONTACT).first().click();
+    await page.waitForTimeout(800);
+    check(`fix @${width}: the popup card can show or scroll to all of its content`,
+      await page.evaluate(() => {
+        const card = document.querySelector('#elementor-popup-modal-394 .dialog-message');
+        const r = card.getBoundingClientRect();
+        const fitsViewport = r.height <= window.innerHeight + 1;
+        const reachable = card.scrollHeight <= card.clientHeight
+          || getComputedStyle(card).overflowY === 'auto';
+        return fitsViewport && reachable;
+      }));
+    await ctx.close();
+  }
 }
 
 /* ---------------------------------------------------------------- 404 */

@@ -11,6 +11,7 @@ import type { PageRecord } from '../lib/pages';
 import { fragment, chatWidgetHtml } from '../lib/pages';
 import PageContent from '../components/PageContent.astro';
 import { CHAT_WIDGET, WEBFONTS } from '../config';
+import { FIXES_ON, FIX_CSS, fixPageMeta, fixSeoHead } from '../lib/fixes';
 import '../styles/global.css';
 
 interface Props {
@@ -24,9 +25,17 @@ const canonical = new URL(page.path, site).href;
 // Yoast's block is stored with the origin templated out, so a preview deployment
 // describes itself rather than production. The escaped spelling is the one inside
 // the JSON-LD graph.
-const seoHead = page.seoHead
-  .split('__ORIGIN_ESC__').join(site.origin.replace(/\//g, '\\/'))
-  .split('__ORIGIN__').join(site.origin);
+const seoHead = fixSeoHead(
+  page.seoHead
+    .split('__ORIGIN_ESC__').join(site.origin.replace(/\//g, '\\/'))
+    .split('__ORIGIN__').join(site.origin),
+);
+
+// Corrections to the stale copy Yoast baked into this page's description and robots
+// directive — the home page's search snippet read "We grow roofing companies".
+const meta = fixPageMeta(page.path);
+const description = meta.description ?? page.description;
+const robots = meta.robots ?? page.robots;
 
 /**
  * Elementor's Google-font stylesheets, self-hosted by scripts/build-fonts.mjs.
@@ -58,9 +67,9 @@ const chat = CHAT_WIDGET ? chatWidgetHtml : '';
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="profile" href="https://gmpg.org/xfn/11" />
-    {page.robots && <meta name="robots" content={page.robots} />}
+    {robots && <meta name="robots" content={robots} />}
     <title set:html={page.title} />
-    {page.description && <meta name="description" content={page.description} />}
+    {description && <meta name="description" content={description} />}
     <link rel="canonical" href={canonical} />
     <Fragment set:html={seoHead} />
 
@@ -74,6 +83,8 @@ const chat = CHAT_WIDGET ? chatWidgetHtml : '';
       <link rel={icon.rel} href={icon.href} {...(icon.sizes ? { sizes: icon.sizes } : {})} />
     ))}
     {page.tile && <meta name="msapplication-TileImage" content={page.tile} />}
+
+    {FIXES_ON && <style set:html={FIX_CSS} />}
 
     <slot name="head" />
   </head>

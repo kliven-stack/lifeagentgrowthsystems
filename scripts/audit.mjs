@@ -20,9 +20,10 @@ const redirectSources = new Set(redirects.map((r) => r.source.replace(/\/$/, '')
  * fixed — anything not listed is a migration regression.
  */
 const BROKEN_ON_PRODUCTION = new Set([
-  // /privacy-policy/ links `www.roofinggrowthsystems.com` — a different client's
-  // domain, and without a scheme, so the browser resolves it against the current
-  // directory. 404 on WordPress, 404 here. See the README's original-site bugs.
+  // /privacy-policy/ linked `www.roofinggrowthsystems.com` — a different client's
+  // domain, and without a scheme, so the browser resolved it against the current
+  // directory. Fixed in src/lib/fixes.ts, so this only appears in a
+  // `PUBLIC_ORIGINAL_BUGS=keep` build, where production 404s on it too.
   '/privacy-policy/www.roofinggrowthsystems.com',
 ]);
 
