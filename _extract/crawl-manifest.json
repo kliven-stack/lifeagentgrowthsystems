@@ -1,0 +1,113 @@
+[
+  {
+    "url": "https://lifeagentgrowthsystems.com/",
+    "status": 200,
+    "finalUrl": "https://lifeagentgrowthsystems.com/",
+    "slug": "index",
+    "redirect": false,
+    "fromSitemap": true
+  },
+  {
+    "url": "https://lifeagentgrowthsystems.com/privacy-policy/",
+    "status": 200,
+    "finalUrl": "https://lifeagentgrowthsystems.com/privacy-policy/",
+    "slug": "privacy-policy",
+    "redirect": false,
+    "fromSitemap": true
+  },
+  {
+    "url": "https://lifeagentgrowthsystems.com/top-8-things-to-grow/",
+    "status": 200,
+    "finalUrl": "https://lifeagentgrowthsystems.com/top-8-things-to-grow/",
+    "slug": "top-8-things-to-grow",
+    "redirect": false,
+    "fromSitemap": true
+  },
+  {
+    "url": "https://lifeagentgrowthsystems.com/guarantee/",
+    "status": 200,
+    "finalUrl": "https://lifeagentgrowthsystems.com/guarantee/",
+    "slug": "guarantee",
+    "redirect": false,
+    "fromSitemap": true
+  },
+  {
+    "url": "https://lifeagentgrowthsystems.com/how-it-works/",
+    "status": 200,
+    "finalUrl": "https://lifeagentgrowthsystems.com/how-it-works/",
+    "slug": "how-it-works",
+    "redirect": false,
+    "fromSitemap": true
+  },
+  {
+    "url": "https://lifeagentgrowthsystems.com/template/",
+    "status": 200,
+    "finalUrl": "https://lifeagentgrowthsystems.com/template/",
+    "slug": "template",
+    "redirect": false,
+    "fromSitemap": true
+  },
+  {
+    "url": "https://lifeagentgrowthsystems.com/about/",
+    "status": 200,
+    "finalUrl": "https://lifeagentgrowthsystems.com/about/",
+    "slug": "about",
+    "redirect": false,
+    "fromSitemap": true
+  },
+  {
+    "url": "https://lifeagentgrowthsystems.com/home-2/",
+    "status": 200,
+    "finalUrl": "https://lifeagentgrowthsystems.com/home-2/",
+    "slug": "home-2",
+    "redirect": false,
+    "fromSitemap": true
+  },
+  {
+    "url": "https://lifeagentgrowthsystems.com/schedule-a-call/",
+    "status": 200,
+    "finalUrl": "https://lifeagentgrowthsystems.com/schedule-a-call/",
+    "slug": "schedule-a-call",
+    "redirect": false,
+    "fromSitemap": true
+  },
+  {
+    "url": "https://lifeagentgrowthsystems.com/google-my-business-walkthrough/",
+    "status": 200,
+    "finalUrl": "https://lifeagentgrowthsystems.com/google-my-business-walkthrough/",
+    "slug": "google-my-business-walkthrough",
+    "redirect": false,
+    "fromSitemap": false
+  },
+  {
+    "url": "https://lifeagentgrowthsystems.com/category/uncategorized/",
+    "status": 200,
+    "finalUrl": "https://lifeagentgrowthsystems.com/category/uncategorized/",
+    "slug": "category__uncategorized",
+    "redirect": false,
+    "fromSitemap": false
+  },
+  {
+    "url": "https://lifeagentgrowthsystems.com/xmlrpc.php/",
+    "status": 403,
+    "finalUrl": "https://lifeagentgrowthsystems.com/xmlrpc.php/",
+    "slug": "xmlrpc.php",
+    "redirect": false,
+    "fromSitemap": false
+  },
+  {
+    "url": "https://lifeagentgrowthsystems.com/www.roofinggrowthsystems.com/",
+    "status": 404,
+    "finalUrl": "https://lifeagentgrowthsystems.com/www.roofinggrowthsystems.com/",
+    "slug": "www.roofinggrowthsystems.com",
+    "redirect": false,
+    "fromSitemap": false
+  },
+  {
+    "url": "https://lifeagentgrowthsystems.com/404/",
+    "status": 200,
+    "finalUrl": "https://lifeagentgrowthsystems.com/404/",
+    "slug": "404",
+    "fromSitemap": false
+  }
+]

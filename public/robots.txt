@@ -1,0 +1,6 @@
+# Mirrors the WordPress site's Yoast block. The sitemap points at Astro's index,
+# which vercel.json also redirects /sitemap_index.xml to.
+User-agent: *
+Disallow:
+
+Sitemap: https://roofinggrowthsystems.com/sitemap-index.xml

@@ -1,0 +1,110 @@
+---
+/**
+ * Page shell for the cloned WordPress pages.
+ *
+ * The <head> reproduces the original's stylesheet cascade exactly: every handle the
+ * WordPress page linked, in the same order, served from public/wp/css/. Elementor's
+ * compiled per-post CSS is what makes the clone pixel-accurate, so it ships verbatim
+ * rather than being re-derived (playbook §2, §7.1).
+ */
+import type { PageRecord } from '../lib/pages';
+import { fragment, chatWidgetHtml } from '../lib/pages';
+import PageContent from '../components/PageContent.astro';
+import { CHAT_WIDGET, WEBFONTS } from '../config';
+import '../styles/global.css';
+
+interface Props {
+  page: PageRecord;
+}
+
+const { page } = Astro.props as Props;
+const site = Astro.site ?? new URL('https://lifeagentgrowthsystems.com');
+const canonical = new URL(page.path, site).href;
+
+// Yoast's block is stored with the origin templated out, so a preview deployment
+// describes itself rather than production. The escaped spelling is the one inside
+// the JSON-LD graph.
+const seoHead = page.seoHead
+  .split('__ORIGIN_ESC__').join(site.origin.replace(/\//g, '\\/'))
+  .split('__ORIGIN__').join(site.origin);
+
+/**
+ * Elementor's Google-font stylesheets. Off by default — production links them but
+ * their font files are `http://` URLs on an `https://` page, so Chrome blocks every
+ * one and the site renders in the system stack. See src/config.ts and the README.
+ */
+const webfonts = WEBFONTS === 'on';
+const css = webfonts ? page.css : page.css.filter((c) => !c.name.startsWith('elementor-gf-local-'));
+
+/**
+ * With the fonts switched on, the two faces above the fold on every page: the kit's
+ * heading family (Inter) and its body family (Roboto). Both are Elementor's own
+ * local Google Fonts files, mirrored by scripts/build-fonts.mjs.
+ */
+const PRELOAD_FONTS = webfonts
+  ? [
+      '/wp/fonts/inter-ucc73fwrk3iltehus_nvmrmxcp50sjia1zl7.woff2',
+      '/wp/fonts/roboto-kfo7cnqeu92fr1me7ksn66agldtyluama3yuba.woff2',
+    ]
+  : [];
+
+const chat = CHAT_WIDGET ? chatWidgetHtml : '';
+---
+
+<!doctype html>
+<html lang={page.lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="profile" href="https://gmpg.org/xfn/11" />
+    {page.robots && <meta name="robots" content={page.robots} />}
+    <title set:html={page.title} />
+    {page.description && <meta name="description" content={page.description} />}
+    <link rel="canonical" href={canonical} />
+    <Fragment set:html={seoHead} />
+
+    {PRELOAD_FONTS.map((href) => (
+      <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />
+    ))}
+
+    {css.map((sheet) => <link rel="stylesheet" href={`/wp/css/${sheet.name}.css`} />)}
+
+    {page.favicons.map((icon) => (
+      <link rel={icon.rel} href={icon.href} {...(icon.sizes ? { sizes: icon.sizes } : {})} />
+    ))}
+    {page.tile && <meta name="msapplication-TileImage" content={page.tile} />}
+
+    <slot name="head" />
+  </head>
+
+  <body class={page.bodyClass}>
+    {page.hasSkipLink && (
+      <a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+    )}
+
+    {/* WordPress prints this into <head>; the parser moves it here, which is where
+        production's DOM has it too. */}
+    {chat && <Fragment set:html={chat} />}
+
+    {page.header && <Fragment set:html={fragment(page.header)} />}
+
+    <slot>
+      <PageContent html={fragment(page.content)} />
+    </slot>
+
+    {/* Through PageContent, not a bare Fragment: the footer carries the subscribe
+        form on every page. */}
+    {page.footer && <PageContent html={fragment(page.footer)} region="footer" />}
+
+    {/* No popups are rendered, and that is production's behaviour, not a shortcut.
+        WordPress prints popup template 147 into every page, but its trigger list is
+        empty (`"triggers":[],"timing":[]`), nothing on the site links a popup
+        action, and Elementor Pro's popup module deletes an unmounted template from
+        the document on init — scripts/inspect-live.mjs finds zero
+        `[data-elementor-type="popup"]` nodes in the live post-init DOM. The
+        fragments are still extracted into src/fragments/popup-147-*.html so the
+        source is on record. */}
+
+    <script src="../scripts/elementor.js"></script>
+  </body>
+</html>
