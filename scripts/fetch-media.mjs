@@ -15,13 +15,11 @@ const localPath = (u) => {
 };
 
 /**
- * Files the markup never links but the site still serves. `/top-8-things-to-grow/`
- * is a WordPress page that 301s straight to this PDF — it is the lead magnet the
- * "Top 8 Things" campaign points at, and vercel.json reproduces the redirect.
+ * Files the markup never links but the site still serves. None on this site: the
+ * `/top-8-things-to-grow/` lead magnet is a rendered page here, not a redirect to a
+ * PDF, and nothing else is reachable that the crawl did not already record.
  */
-const EXTRA = [
-  'https://lifeagentgrowthsystems.com/wp-content/uploads/2021/07/Top_8_Things_To_Grow_Your_Roofing_Business.pdf',
-];
+const EXTRA = [];
 
 const urls = [...JSON.parse(await readFile(path.join(ROOT, '_extract/assets.json'), 'utf8')), ...EXTRA];
 let ok = 0, cached = 0, failed = [];

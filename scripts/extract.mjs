@@ -14,19 +14,26 @@ const CSSDIR = path.join(ROOT, 'public/wp/css');
 const ORIGIN = 'https://lifeagentgrowthsystems.com';
 const ORIGIN_ESC = 'https:\\/\\/lifeagentgrowthsystems.com';
 
-// LeadConnector ("Trustymail") widget ids → the variant of our replacement form.
-// Two of them: the "Contact Us" form in the home page's content, and the "New
-// Subscribe Form" the footer shows on every page.
+// Lead-form widget ids → the variant of our replacement form.
 //
-// The site's third embed family — the `links.sybrware.com` appointment widgets on
-// /discovery-call/, /strategycalendar-jeremy/ and /strategycalendar-leigh/ — is
-// deliberately NOT listed. Those are booking calendars, not contact forms, and the
-// replacement form would be the wrong thing in their place. They are cloned exactly
-// as production serves them (see the README: that host no longer resolves, so they
-// are already blank on the WordPress site).
+// Only one entry: the "Contact Us" form the site shows inside Elementor popup 394,
+// which the header's `.contact-form` menu item opens on every page. That popup is
+// this site's one and only contact form.
+//
+// Deliberately NOT listed, and why:
+//   cdZY1oqfd2VM9RLPCj6T  the booking calendar embedded on /schedule-a-call/ — an
+//                         appointment widget, not a contact form; our form would be
+//                         the wrong thing in its place.
+//   VO9V22uliCdvFlL9XROV  the form on the orphaned /home-2/ draft, and
+//   book-discovery-call   the appointment widget on the same page. Both are served
+//                         from links.sybrware.com, which no longer resolves at all
+//                         (NXDOMAIN), so both are already blank frames on the
+//                         WordPress site. /home-2/ is an unlinked leftover of the
+//                         previous design; it is cloned exactly as production serves
+//                         it rather than quietly given a working form the live page
+//                         does not have. See the README's original-site bugs.
 const LEAD_FORMS = {
-  YexCXgNprYAcGOxdmIZe: 'contact',
-  fLnKCikdak4YmU1PBIUQ: 'subscribe',
+  vfrnMQAlDqN1xdt4Q60m: 'contact',
 };
 
 // Hosts whose assets we mirror into public/ so the clone has no third-party image
@@ -148,10 +155,9 @@ function cleanFragment($, $el) {
       $e.attr('style', s.split(ORIGIN).join(''));
     }
   });
-  // The two LeadConnector lead forms are wrapped in markers so the page can swap
-  // in our own static form when a Growthmap endpoint is configured (playbook §4b).
-  // The survey funnel and the Calendly embed stay as they are — they are GoHighLevel
-  // flows on the client's own subdomain, not contact forms.
+  // The popup's lead form is wrapped in markers so the page can swap in our own
+  // static form when a Growthmap endpoint is configured (playbook §4b). The booking
+  // calendars are left exactly as production serves them — see LEAD_FORMS above.
   for (const [formId, variant] of Object.entries(LEAD_FORMS)) {
     $el.find(`iframe[src*="${formId}"]`).each((i, el) => {
       const $frame = $(el);
@@ -224,14 +230,21 @@ for (const file of files) {
   });
 
   // --- the GoHighLevel chat bubble
-  // A `<chat-widget>` custom element plus its loader, printed into <head> by the
-  // LeadConnector plugin — which means the parser moves both to the top of <body>.
+  // Printed into <head> on every page by the LeadConnector plugin: a loader script
+  // carrying the account's `data-widget-id`, which injects the `<chat-widget>`
+  // element itself at runtime (unlike other installs, no element is in the source).
+  // LiteSpeed has already rewritten it to a same-origin copy of the vendor bundle,
+  // so mirroring it removes a third-party dependency rather than adding one.
+  //
   // It is the client's own GoHighLevel property and outlives the WordPress install,
   // so it is kept verbatim rather than dropped.
-  const $chat = $('chat-widget');
+  const $chat = $('script[data-resources-url*="chat-widget"]').first();
   if ($chat.length && !chatWidget) {
-    const loader = $('script[src*="widgets.leadconnectorhq.com"]').first();
-    chatWidget = $.html($chat) + (loader.length ? '\n' + $.html(loader) : '');
+    const $s = $chat.clone();
+    const src = $s.attr('src');
+    if (src) $s.attr('src', rewriteUrl(src));
+    $s.removeAttr('data-optimized');
+    chatWidget = $.html($s);
   }
 
   // --- regions
