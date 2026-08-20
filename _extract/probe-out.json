@@ -1,0 +1,750 @@
+{
+  "390": {
+    "swipers": [
+      {
+        "cls": "elementor-main-swiper swiper swiper-initialized swiper-horizontal swiper-pointer-events",
+        "widget": "reviews.default",
+        "containerW": 0,
+        "wrapperStyle": "cursor: grab; transition-duration: 0ms;",
+        "wrapperId": "swiper-wrapper-25f82d534f5aa881",
+        "ariaLive": "off",
+        "count": 5,
+        "slides": [
+          {
+            "cls": "swiper-slide swiper-slide-duplicate",
+            "idx": "2",
+            "aria": null,
+            "style": null
+          },
+          {
+            "cls": "swiper-slide",
+            "idx": "0",
+            "aria": null,
+            "style": null
+          },
+          {
+            "cls": "swiper-slide",
+            "idx": "1",
+            "aria": null,
+            "style": null
+          },
+          {
+            "cls": "swiper-slide",
+            "idx": "2",
+            "aria": null,
+            "style": null
+          },
+          {
+            "cls": "swiper-slide swiper-slide-duplicate swiper-slide-duplicate-active",
+            "idx": "0",
+            "aria": null,
+            "style": null
+          }
+        ]
+      },
+      {
+        "cls": "swiper swiper-8 eael-testimonial-slider-main swiper-container-8120045 swiper-initialized swiper-horizontal swiper-pointer-events swiper-autoheight swiper-backface-hidden",
+        "widget": "eael-testimonial-slider.default",
+        "containerW": 330,
+        "wrapperStyle": "cursor: grab; height: 303px; transform: translate3d(-680px, 0px, 0px); transition-duration: 1000ms;",
+        "wrapperId": "swiper-wrapper-d8535970ece636f9",
+        "ariaLive": "off",
+        "count": 6,
+        "slides": [
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-duplicate",
+            "idx": "3",
+            "aria": "4 / 4",
+            "style": "width: 330px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-prev",
+            "idx": "0",
+            "aria": "1 / 4",
+            "style": "width: 330px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-active",
+            "idx": "1",
+            "aria": "2 / 4",
+            "style": "width: 330px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-next",
+            "idx": "2",
+            "aria": "3 / 4",
+            "style": "width: 330px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left",
+            "idx": "3",
+            "aria": "4 / 4",
+            "style": "width: 330px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-duplicate swiper-slide-duplicate-prev",
+            "idx": "0",
+            "aria": "1 / 4",
+            "style": "width: 330px; margin-right: 10px;"
+          }
+        ]
+      }
+    ],
+    "timeline": {
+      "lineStyle": "left: 174.5px; width: 1050px;",
+      "track": {
+        "x": 20,
+        "y": 9931.61,
+        "w": 350,
+        "h": 536.17
+      },
+      "mid": {
+        "x": 20,
+        "y": 10160.39,
+        "w": 350,
+        "h": 75
+      },
+      "pts": [
+        {
+          "id": "7400c25",
+          "box": {
+            "x": 20,
+            "y": 10160.39,
+            "w": 350,
+            "h": 75
+          },
+          "hasPoint": true,
+          "pointBox": {
+            "x": 20,
+            "y": 10160.39,
+            "w": 350,
+            "h": 75
+          }
+        },
+        {
+          "id": "09748af",
+          "box": {
+            "x": 370,
+            "y": 10160.39,
+            "w": 350,
+            "h": 75
+          },
+          "hasPoint": true,
+          "pointBox": {
+            "x": 370,
+            "y": 10160.39,
+            "w": 350,
+            "h": 75
+          }
+        },
+        {
+          "id": "3d9aaa8",
+          "box": {
+            "x": 720,
+            "y": 10160.39,
+            "w": 350,
+            "h": 75
+          },
+          "hasPoint": true,
+          "pointBox": {
+            "x": 720,
+            "y": 10160.39,
+            "w": 350,
+            "h": 75
+          }
+        },
+        {
+          "id": "5de08ed",
+          "box": {
+            "x": 1070,
+            "y": 10160.39,
+            "w": 350,
+            "h": 75
+          },
+          "hasPoint": true,
+          "pointBox": {
+            "x": 1070,
+            "y": 10160.39,
+            "w": 350,
+            "h": 75
+          }
+        }
+      ]
+    },
+    "parallax": [],
+    "sticky": [
+      {
+        "cls": "elementor-section elementor-top-section elementor-element elementor-element-3e03d4aa c-header elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-sticky elementor-sticky--active elementor-section--handles-inside",
+        "style": "position: fixed; width: 390px; margin-top: 0px; margin-bottom: 0px; top: 0px;",
+        "id": "3e03d4aa"
+      },
+      {
+        "cls": "elementor-section elementor-top-section elementor-element elementor-element-3e03d4aa c-header elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-sticky elementor-sticky__spacer",
+        "style": "visibility: hidden; transition: none; animation: auto ease 0s 1 normal none running none;",
+        "id": "3e03d4aa"
+      }
+    ],
+    "bodyClass": "home wp-singular page-template page-template-elementor_header_footer page page-id-19 wp-custom-logo wp-embed-responsive wp-theme-hello-elementor wp-child-theme-hello-theme-child-master hello-elementor-default elementor-default elementor-template-full-width elementor-kit-11 elementor-page elementor-page-19 e--ua-blink e--ua-mac e--ua-webkit",
+    "jetBrands": {
+      "html": "\n\t\t\t\t\t<div class=\"elementor-jet-brands jet-elements\"><div class=\"brands-wrap\">\n\t<div class=\"brands-list col-row\"><div class=\"brands-list__item\"><a class=\"brands-list__item-link\" href=\"#\"><div class=\"brands-list__item-img-wrap\"><img data-lazyloaded=\"1\" src=\"data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=\" decoding=\"async\" data-src=\"https://lifeagentgrowthsystems.com/wp-content/uploads/2021/07/MailChimp-1.png\" alt=\"MailChimp\" class=\"brands-list__item-img\" loading=\"lazy\" width=\"200\" height=\"150\"><noscript><img decoding=\"async\" src=\"https://lifeagentgrowthsystems.com/wp-cont",
+      "cls": "elementor-element elementor-element-ea2c108 elementor-widget elementor-widget-jet-brands"
+    },
+    "popupError": "TimeoutError: page.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for locator('.contact-form > a')\n    - locator resolved to 4 elements. Proceeding with the first one: <a href=\"#\" class=\"elemen"
+  },
+  "900": {
+    "swipers": [
+      {
+        "cls": "elementor-main-swiper swiper swiper-initialized swiper-horizontal swiper-pointer-events",
+        "widget": "reviews.default",
+        "containerW": 0,
+        "wrapperStyle": "cursor: grab; transition-duration: 0ms;",
+        "wrapperId": "swiper-wrapper-1c49425c33b410537",
+        "ariaLive": "off",
+        "count": 5,
+        "slides": [
+          {
+            "cls": "swiper-slide swiper-slide-duplicate",
+            "idx": "2",
+            "aria": null,
+            "style": null
+          },
+          {
+            "cls": "swiper-slide",
+            "idx": "0",
+            "aria": null,
+            "style": null
+          },
+          {
+            "cls": "swiper-slide",
+            "idx": "1",
+            "aria": null,
+            "style": null
+          },
+          {
+            "cls": "swiper-slide",
+            "idx": "2",
+            "aria": null,
+            "style": null
+          },
+          {
+            "cls": "swiper-slide swiper-slide-duplicate swiper-slide-duplicate-active",
+            "idx": "0",
+            "aria": null,
+            "style": null
+          }
+        ]
+      },
+      {
+        "cls": "swiper swiper-8 eael-testimonial-slider-main swiper-container-8120045 swiper-initialized swiper-horizontal swiper-pointer-events swiper-autoheight swiper-backface-hidden",
+        "widget": "eael-testimonial-slider.default",
+        "containerW": 840,
+        "wrapperStyle": "cursor: grab; height: 303px; transform: translate3d(-1275px, 0px, 0px); transition-duration: 1000ms;",
+        "wrapperId": "swiper-wrapper-f7d55b44ee26afec",
+        "ariaLive": "off",
+        "count": 8,
+        "slides": [
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-duplicate swiper-slide-duplicate-next",
+            "idx": "2",
+            "aria": "3 / 4",
+            "style": "width: 415px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-duplicate",
+            "idx": "3",
+            "aria": "4 / 4",
+            "style": "width: 415px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-prev",
+            "idx": "0",
+            "aria": "1 / 4",
+            "style": "width: 415px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-active",
+            "idx": "1",
+            "aria": "2 / 4",
+            "style": "width: 415px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-next",
+            "idx": "2",
+            "aria": "3 / 4",
+            "style": "width: 415px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left",
+            "idx": "3",
+            "aria": "4 / 4",
+            "style": "width: 415px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-duplicate swiper-slide-duplicate-prev",
+            "idx": "0",
+            "aria": "1 / 4",
+            "style": "width: 415px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-duplicate swiper-slide-duplicate-active",
+            "idx": "1",
+            "aria": "2 / 4",
+            "style": "width: 415px; margin-right: 10px;"
+          }
+        ]
+      }
+    ],
+    "timeline": {
+      "lineStyle": "left: 142.5px; width: 859.969px;",
+      "track": {
+        "x": 20,
+        "y": 6314.2,
+        "w": 860,
+        "h": 586.56
+      },
+      "mid": {
+        "x": 20,
+        "y": 6542.98,
+        "w": 860,
+        "h": 75
+      },
+      "pts": [
+        {
+          "id": "7400c25",
+          "box": {
+            "x": 20,
+            "y": 6542.98,
+            "w": 286.66,
+            "h": 75
+          },
+          "hasPoint": true,
+          "pointBox": {
+            "x": 20,
+            "y": 6542.98,
+            "w": 286.66,
+            "h": 75
+          }
+        },
+        {
+          "id": "09748af",
+          "box": {
+            "x": 306.66,
+            "y": 6542.98,
+            "w": 286.66,
+            "h": 75
+          },
+          "hasPoint": true,
+          "pointBox": {
+            "x": 306.66,
+            "y": 6542.98,
+            "w": 286.66,
+            "h": 75
+          }
+        },
+        {
+          "id": "3d9aaa8",
+          "box": {
+            "x": 593.31,
+            "y": 6542.98,
+            "w": 286.66,
+            "h": 75
+          },
+          "hasPoint": true,
+          "pointBox": {
+            "x": 593.31,
+            "y": 6542.98,
+            "w": 286.66,
+            "h": 75
+          }
+        },
+        {
+          "id": "5de08ed",
+          "box": {
+            "x": 879.97,
+            "y": 6542.98,
+            "w": 286.66,
+            "h": 75
+          },
+          "hasPoint": true,
+          "pointBox": {
+            "x": 879.97,
+            "y": 6542.98,
+            "w": 286.66,
+            "h": 75
+          }
+        }
+      ]
+    },
+    "parallax": [
+      "3e03d4aa",
+      "3e03d4aa",
+      "ab4f536",
+      "fb80a5e",
+      "e22dd84",
+      "830b6c4",
+      "56f29e9",
+      "34dbd75",
+      "7600218",
+      "50aff1d5",
+      "57b9e10",
+      "4e802177",
+      "0b2855b",
+      "09eb2c2",
+      "6373de0",
+      "c4938d7",
+      "2073492",
+      "2ea731f",
+      "7779522",
+      "d36e9d0",
+      "a1a2201",
+      "5dc27e6",
+      "f433227",
+      "19f13056",
+      "35e9975a"
+    ],
+    "sticky": [
+      {
+        "cls": "elementor-section elementor-top-section elementor-element elementor-element-3e03d4aa c-header elementor-section-boxed elementor-section-height-default elementor-section-height-default jet-parallax-section elementor-sticky elementor-sticky--active elementor-section--handles-inside",
+        "style": "position: fixed; width: 900px; margin-top: 0px; margin-bottom: 0px; top: 0px;",
+        "id": "3e03d4aa"
+      },
+      {
+        "cls": "elementor-section elementor-top-section elementor-element elementor-element-3e03d4aa c-header elementor-section-boxed elementor-section-height-default elementor-section-height-default jet-parallax-section elementor-sticky elementor-sticky__spacer",
+        "style": "visibility: hidden; transition: none; animation: auto ease 0s 1 normal none running none;",
+        "id": "3e03d4aa"
+      }
+    ],
+    "bodyClass": "home wp-singular page-template page-template-elementor_header_footer page page-id-19 wp-custom-logo wp-embed-responsive wp-theme-hello-elementor wp-child-theme-hello-theme-child-master hello-elementor-default elementor-default elementor-template-full-width elementor-kit-11 elementor-page elementor-page-19 e--ua-blink e--ua-mac e--ua-webkit",
+    "jetBrands": {
+      "html": "\n\t\t\t\t\t<div class=\"elementor-jet-brands jet-elements\"><div class=\"brands-wrap\">\n\t<div class=\"brands-list col-row\"><div class=\"brands-list__item\"><a class=\"brands-list__item-link\" href=\"#\"><div class=\"brands-list__item-img-wrap\"><img data-lazyloaded=\"1\" src=\"data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=\" decoding=\"async\" data-src=\"https://lifeagentgrowthsystems.com/wp-content/uploads/2021/07/MailChimp-1.png\" alt=\"MailChimp\" class=\"brands-list__item-img\" loading=\"lazy\" width=\"200\" height=\"150\"><noscript><img decoding=\"async\" src=\"https://lifeagentgrowthsystems.com/wp-cont",
+      "cls": "elementor-element elementor-element-ea2c108 elementor-widget elementor-widget-jet-brands"
+    },
+    "popup": {
+      "bodyClass": "home wp-singular page-template page-template-elementor_header_footer page page-id-19 wp-custom-logo wp-embed-responsive wp-theme-hello-elementor wp-child-theme-hello-theme-child-master hello-elementor-default elementor-default elementor-template-full-width elementor-kit-11 elementor-page elementor-page-19 e--ua-blink e--ua-mac e--ua-webkit dialog-body dialog-lightbox-body dialog-container dialog-lightbox-container",
+      "popup": {
+        "tag": "DIV",
+        "cls": "elementor elementor-394 elementor-location-popup",
+        "id": "",
+        "style": "display: block;",
+        "attrs": {
+          "data-elementor-type": "popup",
+          "data-elementor-id": "394",
+          "class": "elementor elementor-394 elementor-location-popup",
+          "data-elementor-settings": "{\"open_selector\":\".contact-form\",\"a11y_navigation\":\"yes\",\"triggers\":[],\"timing\":[]}",
+          "data-elementor-post-type": "elementor_library",
+          "style": "display: block;"
+        }
+      },
+      "popupParent": {
+        "tag": "DIV",
+        "cls": "dialog-message dialog-lightbox-message",
+        "id": "",
+        "style": null,
+        "attrs": {
+          "class": "dialog-message dialog-lightbox-message"
+        }
+      },
+      "modal": {
+        "tag": "DIV",
+        "cls": "dialog-widget dialog-lightbox-widget dialog-type-buttons dialog-type-lightbox elementor-popup-modal",
+        "id": "elementor-popup-modal-394",
+        "style": "",
+        "attrs": {
+          "class": "dialog-widget dialog-lightbox-widget dialog-type-buttons dialog-type-lightbox elementor-popup-modal",
+          "id": "elementor-popup-modal-394",
+          "aria-modal": "true",
+          "role": "document",
+          "tabindex": "0",
+          "style": ""
+        }
+      },
+      "modalOuter": "<div class=\"dialog-widget dialog-lightbox-widget dialog-type-buttons dialog-type-lightbox elementor-popup-modal\" id=\"elementor-popup-modal-394\" aria-modal=\"true\" role=\"document\" tabindex=\"0\" style=\"\"><div class=\"dialog-widget-content dialog-lightbox-widget-content animated\"><a role=\"button\" tabindex=\"0\" aria-label=\"Close\" href=\"#\" class=\"dialog-close-button dialog-lightbox-close-button\"><i class=\"eicon-close\"></i></a><div class=\"dialog-header dialog-lightbox-header\"></div><div class=\"dialog-message dialog-lightbox-message\"><div data-elementor-type=\"popup\" data-elementor-id=\"394\" class=\"elementor elementor-394 elementor-location-popup\" data-elementor-settings=\"{&quot;open_selector&quot;:&quot;.contact-form&quot;,&quot;a11y_navigation&quot;:&quot;yes&quot;,&quot;triggers&quot;:[],&quot;timing&quot;:[]}\" data-elementor-post-type=\"elementor_library\" style=\"display: block;\">\n\t\t\t\t\t<section data-particle_enable=\"false\" data-particle-mobile-disabled=\"false\" class=\"elementor-section elementor-top-section elementor-element elementor-element-0eda664 elementor-section-boxed elementor-section-height-default elementor-section-height-default\" data-id=\"0eda664\" data-element_type=\"section\" data-e-type=\"section\" data-settings=\"{&quot;jet_parallax_layout_list&quot;:[]}\">\n\t\t\t\t\t\t<div class=\"elementor-container elementor-column-gap-default\">\n\t\t\t\t\t<div class=\"elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-172f773\" data-id=\"172f773\" data-element_type=\"column\" data-e-type=\"column\">\n\t\t\t<div class=\"elementor-widget-wrap elementor-element-populated\">\n\t\t\t\t\t\t<section data-particle_enable=\"false\" data-particle-mobile-disabled=\"false\" class=\"elementor-section elementor-inner-section elementor-element elementor-element-de0bfc0 elementor-section-boxed elementor-section-height-default elementor-section-height-default\" data-id=\"de0bfc0\" data-element_type=\"section\" data-e-type=\"section\" data-settings=\"{&quot;jet_parallax_layout_list&quot;:[]}\">\n\t\t\t\t\t\t<div class=\"elementor-container elementor-column-gap-default\">\n\t\t\t\t\t<div class=\"elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-1c00b4d\" data-id=\"1c00b4d\" data-element_type=\"column\" data-e-type=\"column\">\n\t\t\t<div class=\"elementor-widget-wrap elementor-element-populated\">\n\t\t\t\t\t\t<div class=\"elementor-element elementor-element-65ea235 elementor-widget elementor-widget-heading\" data-id=\"65ea235\" data-element_type=\"widget\" data-e-type=\"widget\" data-widget_type=\"heading.default\">\n\t\t\t\t<div class=\"elementor-widget-container\">\n\t\t\t\t\t<h2 class=\"elementor-heading-title elementor-size-default\">Curious to know if the <i>Life Agent Growth Systems</i> is right for you?</h2>\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"elementor-element elementor-element-72cd4e6 elementor-widget elementor-widget-text-editor\" data-id=\"72cd4e6\" data-element_type=\"widget\" data-e-type=\"widget\" data-widget_type=\"text-editor.default\">\n\t\t\t\t<div class=\"elementor-widget-container\">\n\t\t\t\t\t\t\t\t\t<p class=\"p1\"><span dir=\"ltr\" role=\"presentation\">Weʼd love to learn more about your life insurance business and see if our system </span><span dir=\"ltr\" role=\"presentation\">is a good fit for you.&nbsp;</span></p>\t\t\t\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t</div>\n\t\t\t\t\t</div>\n\t\t</section>\n\t\t\t\t<div class=\"elementor-element elementor-element-6b46a9e popup-form elementor-widget elementor-widget-html\" data-id=\"6b46a9e\" data-element_type=\"widget\" data-e-type=\"widget\" data-widget_type=\"html.default\">\n\t\t\t\t<div class=\"elementor-widget-container\">\n\t\t\t\t\t<div id=\"inline-vfrnMQAlDqN1xdt4Q60m___1-div\" class=\"ep-iFrameContainer\" style=\"border-radius: 4px; display: block;\"><div id=\"inline-vfrnMQAlDqN1xdt4Q60m___1-wrapper\" class=\"ep-wrapper\" style=\"border-radius: 4px;\"><iframe src=\"https://verified.trustymail.co/widget/form/vfrnMQAlDqN1xdt4Q60m\" style=\"width: 100%; height: 705px; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; border-radius: 4px; opacity: 1; visibility: v",
+      "htmlStyle": null,
+      "bodyStyle": null
+    }
+  },
+  "1440": {
+    "swipers": [
+      {
+        "cls": "elementor-main-swiper swiper swiper-initialized swiper-horizontal swiper-pointer-events",
+        "widget": "reviews.default",
+        "containerW": 0,
+        "wrapperStyle": "cursor: grab; transition-duration: 0ms;",
+        "wrapperId": "swiper-wrapper-b6ca8e159e2cffc4",
+        "ariaLive": "off",
+        "count": 5,
+        "slides": [
+          {
+            "cls": "swiper-slide swiper-slide-duplicate",
+            "idx": "2",
+            "aria": null,
+            "style": null
+          },
+          {
+            "cls": "swiper-slide",
+            "idx": "0",
+            "aria": null,
+            "style": null
+          },
+          {
+            "cls": "swiper-slide",
+            "idx": "1",
+            "aria": null,
+            "style": null
+          },
+          {
+            "cls": "swiper-slide",
+            "idx": "2",
+            "aria": null,
+            "style": null
+          },
+          {
+            "cls": "swiper-slide swiper-slide-duplicate swiper-slide-duplicate-active",
+            "idx": "0",
+            "aria": null,
+            "style": null
+          }
+        ]
+      },
+      {
+        "cls": "swiper swiper-8 eael-testimonial-slider-main swiper-container-8120045 swiper-initialized swiper-horizontal swiper-pointer-events swiper-autoheight swiper-backface-hidden",
+        "widget": "eael-testimonial-slider.default",
+        "containerW": 1240,
+        "wrapperStyle": "cursor: grab; height: 303px; transform: translate3d(-1250px, 0px, 0px); transition-duration: 0ms;",
+        "wrapperId": "swiper-wrapper-6ce84b7a3810a4cd1",
+        "ariaLive": "off",
+        "count": 10,
+        "slides": [
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-duplicate swiper-slide-duplicate-next",
+            "idx": "1",
+            "aria": "2 / 4",
+            "style": "width: 406.667px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-duplicate",
+            "idx": "2",
+            "aria": "3 / 4",
+            "style": "width: 406.667px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-duplicate swiper-slide-prev",
+            "idx": "3",
+            "aria": "4 / 4",
+            "style": "width: 406.667px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-active",
+            "idx": "0",
+            "aria": "1 / 4",
+            "style": "width: 406.667px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-next",
+            "idx": "1",
+            "aria": "2 / 4",
+            "style": "width: 406.667px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left",
+            "idx": "2",
+            "aria": "3 / 4",
+            "style": "width: 406.667px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-duplicate-prev",
+            "idx": "3",
+            "aria": "4 / 4",
+            "style": "width: 406.667px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-duplicate swiper-slide-duplicate-active",
+            "idx": "0",
+            "aria": "1 / 4",
+            "style": "width: 406.667px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-duplicate swiper-slide-duplicate-next",
+            "idx": "1",
+            "aria": "2 / 4",
+            "style": "width: 406.667px; margin-right: 10px;"
+          },
+          {
+            "cls": "eael-testimonial-item clearfix swiper-slide eael-testimonial-align-left swiper-slide-duplicate",
+            "idx": "2",
+            "aria": "3 / 4",
+            "style": "width: 406.667px; margin-right: 10px;"
+          }
+        ]
+      }
+    ],
+    "timeline": {
+      "lineStyle": "left: 172.5px; width: 1035px;",
+      "track": {
+        "x": 30,
+        "y": 6265.13,
+        "w": 1380,
+        "h": 536.17
+      },
+      "mid": {
+        "x": 30,
+        "y": 6493.91,
+        "w": 1380,
+        "h": 75
+      },
+      "pts": [
+        {
+          "id": "7400c25",
+          "box": {
+            "x": 30,
+            "y": 6493.91,
+            "w": 345,
+            "h": 75
+          },
+          "hasPoint": true,
+          "pointBox": {
+            "x": 30,
+            "y": 6493.91,
+            "w": 345,
+            "h": 75
+          }
+        },
+        {
+          "id": "09748af",
+          "box": {
+            "x": 375,
+            "y": 6493.91,
+            "w": 345,
+            "h": 75
+          },
+          "hasPoint": true,
+          "pointBox": {
+            "x": 375,
+            "y": 6493.91,
+            "w": 345,
+            "h": 75
+          }
+        },
+        {
+          "id": "3d9aaa8",
+          "box": {
+            "x": 720,
+            "y": 6493.91,
+            "w": 345,
+            "h": 75
+          },
+          "hasPoint": true,
+          "pointBox": {
+            "x": 720,
+            "y": 6493.91,
+            "w": 345,
+            "h": 75
+          }
+        },
+        {
+          "id": "5de08ed",
+          "box": {
+            "x": 1065,
+            "y": 6493.91,
+            "w": 345,
+            "h": 75
+          },
+          "hasPoint": true,
+          "pointBox": {
+            "x": 1065,
+            "y": 6493.91,
+            "w": 345,
+            "h": 75
+          }
+        }
+      ]
+    },
+    "parallax": [
+      "3e03d4aa",
+      "3e03d4aa",
+      "ab4f536",
+      "fb80a5e",
+      "e22dd84",
+      "830b6c4",
+      "56f29e9",
+      "34dbd75",
+      "7600218",
+      "50aff1d5",
+      "57b9e10",
+      "4e802177",
+      "0b2855b",
+      "09eb2c2",
+      "6373de0",
+      "c4938d7",
+      "2073492",
+      "2ea731f",
+      "7779522",
+      "d36e9d0",
+      "a1a2201",
+      "5dc27e6",
+      "f433227",
+      "19f13056",
+      "35e9975a"
+    ],
+    "sticky": [
+      {
+        "cls": "elementor-section elementor-top-section elementor-element elementor-element-3e03d4aa c-header elementor-section-boxed elementor-section-height-default elementor-section-height-default jet-parallax-section elementor-sticky elementor-sticky--active elementor-section--handles-inside",
+        "style": "position: fixed; width: 1440px; margin-top: 0px; margin-bottom: 0px; top: 0px;",
+        "id": "3e03d4aa"
+      },
+      {
+        "cls": "elementor-section elementor-top-section elementor-element elementor-element-3e03d4aa c-header elementor-section-boxed elementor-section-height-default elementor-section-height-default jet-parallax-section elementor-sticky elementor-sticky__spacer",
+        "style": "visibility: hidden; transition: none; animation: auto ease 0s 1 normal none running none;",
+        "id": "3e03d4aa"
+      }
+    ],
+    "bodyClass": "home wp-singular page-template page-template-elementor_header_footer page page-id-19 wp-custom-logo wp-embed-responsive wp-theme-hello-elementor wp-child-theme-hello-theme-child-master hello-elementor-default elementor-default elementor-template-full-width elementor-kit-11 elementor-page elementor-page-19 e--ua-blink e--ua-mac e--ua-webkit",
+    "jetBrands": {
+      "html": "\n\t\t\t\t\t<div class=\"elementor-jet-brands jet-elements\"><div class=\"brands-wrap\">\n\t<div class=\"brands-list col-row\"><div class=\"brands-list__item\"><a class=\"brands-list__item-link\" href=\"#\"><div class=\"brands-list__item-img-wrap\"><img data-lazyloaded=\"1\" src=\"data:image/gif;base64,R0lGODdhAQABAPAAAMPDwwAAACwAAAAAAQABAAACAkQBADs=\" decoding=\"async\" data-src=\"https://lifeagentgrowthsystems.com/wp-content/uploads/2021/07/MailChimp-1.png\" alt=\"MailChimp\" class=\"brands-list__item-img\" loading=\"lazy\" width=\"200\" height=\"150\"><noscript><img decoding=\"async\" src=\"https://lifeagentgrowthsystems.com/wp-cont",
+      "cls": "elementor-element elementor-element-ea2c108 elementor-widget elementor-widget-jet-brands"
+    },
+    "popup": {
+      "bodyClass": "home wp-singular page-template page-template-elementor_header_footer page page-id-19 wp-custom-logo wp-embed-responsive wp-theme-hello-elementor wp-child-theme-hello-theme-child-master hello-elementor-default elementor-default elementor-template-full-width elementor-kit-11 elementor-page elementor-page-19 e--ua-blink e--ua-mac e--ua-webkit dialog-body dialog-lightbox-body dialog-container dialog-lightbox-container",
+      "popup": {
+        "tag": "DIV",
+        "cls": "elementor elementor-394 elementor-location-popup",
+        "id": "",
+        "style": "display: block;",
+        "attrs": {
+          "data-elementor-type": "popup",
+          "data-elementor-id": "394",
+          "class": "elementor elementor-394 elementor-location-popup",
+          "data-elementor-settings": "{\"open_selector\":\".contact-form\",\"a11y_navigation\":\"yes\",\"triggers\":[],\"timing\":[]}",
+          "data-elementor-post-type": "elementor_library",
+          "style": "display: block;"
+        }
+      },
+      "popupParent": {
+        "tag": "DIV",
+        "cls": "dialog-message dialog-lightbox-message",
+        "id": "",
+        "style": null,
+        "attrs": {
+          "class": "dialog-message dialog-lightbox-message"
+        }
+      },
+      "modal": {
+        "tag": "DIV",
+        "cls": "dialog-widget dialog-lightbox-widget dialog-type-buttons dialog-type-lightbox elementor-popup-modal",
+        "id": "elementor-popup-modal-394",
+        "style": "",
+        "attrs": {
+          "class": "dialog-widget dialog-lightbox-widget dialog-type-buttons dialog-type-lightbox elementor-popup-modal",
+          "id": "elementor-popup-modal-394",
+          "aria-modal": "true",
+          "role": "document",
+          "tabindex": "0",
+          "style": ""
+        }
+      },
+      "modalOuter": "<div class=\"dialog-widget dialog-lightbox-widget dialog-type-buttons dialog-type-lightbox elementor-popup-modal\" id=\"elementor-popup-modal-394\" aria-modal=\"true\" role=\"document\" tabindex=\"0\" style=\"\"><div class=\"dialog-widget-content dialog-lightbox-widget-content animated\"><a role=\"button\" tabindex=\"0\" aria-label=\"Close\" href=\"#\" class=\"dialog-close-button dialog-lightbox-close-button\"><i class=\"eicon-close\"></i></a><div class=\"dialog-header dialog-lightbox-header\"></div><div class=\"dialog-message dialog-lightbox-message\"><div data-elementor-type=\"popup\" data-elementor-id=\"394\" class=\"elementor elementor-394 elementor-location-popup\" data-elementor-settings=\"{&quot;open_selector&quot;:&quot;.contact-form&quot;,&quot;a11y_navigation&quot;:&quot;yes&quot;,&quot;triggers&quot;:[],&quot;timing&quot;:[]}\" data-elementor-post-type=\"elementor_library\" style=\"display: block;\">\n\t\t\t\t\t<section data-particle_enable=\"false\" data-particle-mobile-disabled=\"false\" class=\"elementor-section elementor-top-section elementor-element elementor-element-0eda664 elementor-section-boxed elementor-section-height-default elementor-section-height-default\" data-id=\"0eda664\" data-element_type=\"section\" data-e-type=\"section\" data-settings=\"{&quot;jet_parallax_layout_list&quot;:[]}\">\n\t\t\t\t\t\t<div class=\"elementor-container elementor-column-gap-default\">\n\t\t\t\t\t<div class=\"elementor-column elementor-col-100 elementor-top-column elementor-element elementor-element-172f773\" data-id=\"172f773\" data-element_type=\"column\" data-e-type=\"column\">\n\t\t\t<div class=\"elementor-widget-wrap elementor-element-populated\">\n\t\t\t\t\t\t<section data-particle_enable=\"false\" data-particle-mobile-disabled=\"false\" class=\"elementor-section elementor-inner-section elementor-element elementor-element-de0bfc0 elementor-section-boxed elementor-section-height-default elementor-section-height-default\" data-id=\"de0bfc0\" data-element_type=\"section\" data-e-type=\"section\" data-settings=\"{&quot;jet_parallax_layout_list&quot;:[]}\">\n\t\t\t\t\t\t<div class=\"elementor-container elementor-column-gap-default\">\n\t\t\t\t\t<div class=\"elementor-column elementor-col-100 elementor-inner-column elementor-element elementor-element-1c00b4d\" data-id=\"1c00b4d\" data-element_type=\"column\" data-e-type=\"column\">\n\t\t\t<div class=\"elementor-widget-wrap elementor-element-populated\">\n\t\t\t\t\t\t<div class=\"elementor-element elementor-element-65ea235 elementor-widget elementor-widget-heading\" data-id=\"65ea235\" data-element_type=\"widget\" data-e-type=\"widget\" data-widget_type=\"heading.default\">\n\t\t\t\t<div class=\"elementor-widget-container\">\n\t\t\t\t\t<h2 class=\"elementor-heading-title elementor-size-default\">Curious to know if the <i>Life Agent Growth Systems</i> is right for you?</h2>\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"elementor-element elementor-element-72cd4e6 elementor-widget elementor-widget-text-editor\" data-id=\"72cd4e6\" data-element_type=\"widget\" data-e-type=\"widget\" data-widget_type=\"text-editor.default\">\n\t\t\t\t<div class=\"elementor-widget-container\">\n\t\t\t\t\t\t\t\t\t<p class=\"p1\"><span dir=\"ltr\" role=\"presentation\">Weʼd love to learn more about your life insurance business and see if our system </span><span dir=\"ltr\" role=\"presentation\">is a good fit for you.&nbsp;</span></p>\t\t\t\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t</div>\n\t\t\t\t\t</div>\n\t\t</section>\n\t\t\t\t<div class=\"elementor-element elementor-element-6b46a9e popup-form elementor-widget elementor-widget-html\" data-id=\"6b46a9e\" data-element_type=\"widget\" data-e-type=\"widget\" data-widget_type=\"html.default\">\n\t\t\t\t<div class=\"elementor-widget-container\">\n\t\t\t\t\t<div id=\"inline-vfrnMQAlDqN1xdt4Q60m___1-div\" class=\"ep-iFrameContainer\" style=\"border-radius: 4px; display: block;\"><div id=\"inline-vfrnMQAlDqN1xdt4Q60m___1-wrapper\" class=\"ep-wrapper\" style=\"border-radius: 4px;\"><iframe src=\"https://verified.trustymail.co/widget/form/vfrnMQAlDqN1xdt4Q60m\" style=\"width: 100%; height: 705px; border-width: medium; border-style: none; border-color: currentcolor; border-image: none; border-radius: 4px; opacity: 1; visibility: v",
+      "htmlStyle": null,
+      "bodyStyle": null
+    }
+  }
+}

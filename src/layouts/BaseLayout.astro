@@ -29,17 +29,18 @@ const seoHead = page.seoHead
   .split('__ORIGIN__').join(site.origin);
 
 /**
- * Elementor's Google-font stylesheets. Off by default — production links them but
- * their font files are `http://` URLs on an `https://` page, so Chrome blocks every
- * one and the site renders in the system stack. See src/config.ts and the README.
+ * Elementor's Google-font stylesheets, self-hosted by scripts/build-fonts.mjs.
+ * On by default, because that is what production renders: unlike the sibling
+ * roofinggrowthsystems site, every `src: url(...)` in these sheets is spelled
+ * `https://`, so nothing is blocked as mixed content and the site's real
+ * typography arrives. `PUBLIC_WEBFONTS=off` drops them.
  */
-const webfonts = WEBFONTS === 'on';
+const webfonts = WEBFONTS !== 'off';
 const css = webfonts ? page.css : page.css.filter((c) => !c.name.startsWith('elementor-gf-local-'));
 
 /**
- * With the fonts switched on, the two faces above the fold on every page: the kit's
- * heading family (Inter) and its body family (Roboto). Both are Elementor's own
- * local Google Fonts files, mirrored by scripts/build-fonts.mjs.
+ * The two faces above the fold on every page: the kit's heading family (Inter) and
+ * its body family (Roboto), both from Elementor's own local Google Fonts files.
  */
 const PRELOAD_FONTS = webfonts
   ? [
@@ -92,18 +93,21 @@ const chat = CHAT_WIDGET ? chatWidgetHtml : '';
       <PageContent html={fragment(page.content)} />
     </slot>
 
-    {/* Through PageContent, not a bare Fragment: the footer carries the subscribe
-        form on every page. */}
-    {page.footer && <PageContent html={fragment(page.footer)} region="footer" />}
+    {page.footer && <Fragment set:html={fragment(page.footer)} />}
 
-    {/* No popups are rendered, and that is production's behaviour, not a shortcut.
-        WordPress prints popup template 147 into every page, but its trigger list is
-        empty (`"triggers":[],"timing":[]`), nothing on the site links a popup
-        action, and Elementor Pro's popup module deletes an unmounted template from
-        the document on init — scripts/inspect-live.mjs finds zero
-        `[data-elementor-type="popup"]` nodes in the live post-init DOM. The
-        fragments are still extracted into src/fragments/popup-147-*.html so the
-        source is on record. */}
+    {/* Popup templates.
+        Elementor keeps a popup out of the document until something opens it —
+        scripts/inspect-live.mjs finds zero `[data-elementor-type="popup"]` nodes in
+        the live pre-open DOM — so they are parked in <template> elements, whose
+        content is not in the DOM tree at all. src/scripts/elementor.js clones one in
+        (and builds the dialog wrapper around it) when a click matches the template's
+        `open_selector`. On this site that selector is `.contact-form`, the header's
+        "Contact Us" menu item, and the popup holds the site's only contact form. */}
+    {page.popups.map((name) => (
+      <template class="gm-popup">
+        <PageContent html={fragment(name)} region={name} />
+      </template>
+    ))}
 
     <script src="../scripts/elementor.js"></script>
   </body>

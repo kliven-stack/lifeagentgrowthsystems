@@ -20,9 +20,10 @@ const redirectSources = new Set(redirects.map((r) => r.source.replace(/\/$/, '')
  * fixed — anything not listed is a migration regression.
  */
 const BROKEN_ON_PRODUCTION = new Set([
-  // /privacy-policy/ links the site's own address without a scheme, so the browser
-  // resolves it against the current directory. 404 on WordPress, 404 here.
-  '/privacy-policy/www.lifeagentgrowthsystems.com',
+  // /privacy-policy/ links `www.roofinggrowthsystems.com` — a different client's
+  // domain, and without a scheme, so the browser resolves it against the current
+  // directory. 404 on WordPress, 404 here. See the README's original-site bugs.
+  '/privacy-policy/www.roofinggrowthsystems.com',
 ]);
 
 /**

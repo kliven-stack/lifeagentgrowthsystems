@@ -1,89 +1,86 @@
 ---
 /**
- * Growthmap lead forms (playbook §4b).
+ * Growthmap lead form (playbook §4b).
  *
  * Fully static: the browser POSTs FormData straight to `PUBLIC_CONTACT_ENDPOINT`,
- * so the site needs no adapter and no serverless function. These replace the two
- * LeadConnector ("Trustymail") iframes the WordPress pages embed:
+ * so the site needs no adapter and no serverless function. This replaces the one
+ * LeadConnector ("Trustymail") iframe the WordPress site embeds — the "Contact Us"
+ * form inside Elementor popup 394, which the header's "Contact Us" menu item opens
+ * on every page.
  *
- *   contact    — "Contact Us", in the home page's content column (550px wide there)
- *   subscribe  — "New Subscribe Form", in the footer of every page
+ * The field set, placeholders, consent copy, colours, radii, paddings and row
+ * rhythm were read out of the live widget's own document with
+ * `_extract/probe-form.mjs`, not guessed: four fields with placeholder-only
+ * labelling and a trailing asterisk, two consent checkboxes, a SUBMIT button in
+ * #096eef, and the Terms/Privacy pair underneath pointing at Growthmap's own pages.
  *
- * Field set, placeholders, colours, radii, paddings and per-row heights were all
- * measured off the live widgets with scripts/inspect-form.mjs, so the sections keep
- * their look and their height. The widgets label nothing: every field is a
- * placeholder with a trailing asterisk, and there is no submit copy beyond "SUBMIT".
- * The clone keeps that look but adds a visually-hidden <label> per field, because a
- * placeholder is not an accessible name.
+ * Three deliberate departures from the widget, all accessibility fixes:
+ *   * every field gets a visually-hidden <label> — a placeholder is not an
+ *     accessible name;
+ *   * the fields the widget marks with an asterisk are actually `required`
+ *     (the widget renders the asterisk but sets `required` on nothing);
+ *   * the phone field is a plain `tel` input rather than the widget's country
+ *     picker, which is a JS component we are not shipping.
  *
- * With no endpoint configured the caller keeps the original embeds instead, so a
+ * With no endpoint configured the caller keeps the original embed instead, so a
  * deploy before the endpoint exists never ships a dead form.
  */
 import { CONTACT_ENDPOINT } from '../config';
 
 interface Props {
-  variant: 'contact' | 'subscribe';
-  /**
-   * Which region this instance renders in. The footer's subscribe form appears on
-   * every page alongside the home page's contact form, so the label/input ids have
-   * to differ between them.
-   */
+  variant: 'contact';
+  /** Names the region so ids stay unique if the form is ever used twice. */
   region: string;
 }
 
 const { variant, region } = Astro.props as Props;
 
+const FIELDS = [
+  { name: 'full_name', tag: 'input', type: 'text', label: 'Name', autocomplete: 'name' },
+  { name: 'email', tag: 'input', type: 'email', label: 'Email', autocomplete: 'email' },
+  { name: 'phone', tag: 'input', type: 'tel', label: 'Phone', autocomplete: 'tel' },
+  { name: 'message', tag: 'textarea', label: 'Write your Message' },
+] as const;
+
 /**
- * The widgets' own fields. `full_name` and the GoHighLevel custom-field id behind
- * the message textarea are kept as the wire names, since the Growthmap endpoint
- * receives the labels alongside the values.
+ * The widget's two consent checkboxes, verbatim — including the phone number,
+ * which is the client's. Neither is required on the widget, and neither is here.
  */
-const FIELDS = {
-  contact: [
-    { name: 'full_name', tag: 'input', type: 'text', label: 'Name', autocomplete: 'name' },
-    { name: 'email', tag: 'input', type: 'email', label: 'Email', autocomplete: 'email' },
-    { name: 'phone', tag: 'input', type: 'tel', label: 'Phone', autocomplete: 'tel' },
-    { name: 'message', tag: 'textarea', label: 'Write your Message' },
-  ],
-  subscribe: [
-    { name: 'full_name', tag: 'input', type: 'text', label: 'Name', autocomplete: 'name' },
-    { name: 'email', tag: 'input', type: 'email', label: 'Email', autocomplete: 'email' },
-  ],
-} as const;
-
-/** Rendered height of the iframe being replaced, measured at 1440 / 900 / 390. */
-const HEIGHT = { contact: 484, subscribe: 285 } as const;
-
-const FORM_NAME = { contact: 'Contact Us', subscribe: 'New Subscribe Form' } as const;
-
-const fields = FIELDS[variant];
+const CONSENTS = [
+  {
+    name: 'consent_transactional',
+    text: 'I consent to receive non-marketing text messages from Life Agent Growth Systems (e.g., updates, reminders) at the phone number provided (863) 777-4769. Message and data rates may apply.',
+  },
+  {
+    name: 'consent_marketing',
+    text: 'I consent to receive marketing text messages from Life Agent Growth Systems at the phone number provided (863) 777-4769. Message frequency may vary. Message and data rates may apply. Text HELP for assistance, or reply STOP to opt out.',
+  },
+] as const;
 ---
 
-<div class:list={['gm-form', `gm-form--${variant}`]} style={`min-height:${HEIGHT[variant]}px`}>
+<div class:list={['gm-form', `gm-form--${variant}`]}>
   <form
     class="gm-form__form"
     method="post"
     action={CONTACT_ENDPOINT}
     data-endpoint={CONTACT_ENDPOINT}
   >
-    <input type="hidden" name="form_name" value={FORM_NAME[variant]} />
+    <input type="hidden" name="form_name" value="Contact Us" />
     <input type="hidden" name="source_page" value="" data-fill="path" />
 
-    {fields.map((field) => (
+    {FIELDS.map((field) => (
       <div class:list={['gm-form__field', field.tag === 'textarea' && 'gm-form__field--area']}>
-        <label class="gm-form__label" for={`gm-${region}-${variant}-${field.name}`}>
-          {field.label}
-        </label>
+        <label class="gm-form__label" for={`gm-${region}-${field.name}`}>{field.label}</label>
         {field.tag === 'textarea' ? (
           <textarea
-            id={`gm-${region}-${variant}-${field.name}`}
+            id={`gm-${region}-${field.name}`}
             name={field.name}
             placeholder={`${field.label}*`}
             required
           />
         ) : (
           <input
-            id={`gm-${region}-${variant}-${field.name}`}
+            id={`gm-${region}-${field.name}`}
             name={field.name}
             type={field.type}
             placeholder={`${field.label}*`}
@@ -92,6 +89,13 @@ const fields = FIELDS[variant];
             required
           />
         )}
+      </div>
+    ))}
+
+    {CONSENTS.map((consent) => (
+      <div class="gm-form__consent">
+        <input type="checkbox" id={`gm-${region}-${consent.name}`} name={consent.name} value="yes" />
+        <label for={`gm-${region}-${consent.name}`}>{consent.text}</label>
       </div>
     ))}
 
@@ -108,30 +112,33 @@ const fields = FIELDS[variant];
     </div>
 
     <p class="gm-form__status" role="status" aria-live="polite"></p>
+
+    <p class="gm-form__terms">
+      <a href="https://buildwithgrowthmap.com/terms-of-service/">Terms and Conditions</a>
+      <span aria-hidden="true"> | </span>
+      <a href="https://buildwithgrowthmap.com/privacy-policy/">Privacy Policy</a>
+    </p>
   </form>
 </div>
 
 <style>
-  /* Geometry copied from the widget: a 30px band top and bottom, each field row
-     53px tall with a 16px gap, and the submit button pushed a further 15px down.
-     Contact totals 479px inside a 484px iframe; subscribe totals 280 inside 285. */
+  /* Every value below was measured inside the live widget's own document: 51px
+     field rows on an 18px rhythm, #e9ecef fields at 5px radius with 15px/20px
+     padding, a 49px #096eef submit at 6px radius, and 12px terms copy. */
   .gm-form {
     width: 100%;
-    padding: 30px 0;
     box-sizing: border-box;
     font-family: 'Roboto', sans-serif;
   }
 
-  /* The contact widget insets its column by 20px; the footer's does not. */
-  .gm-form--contact .gm-form__form { padding: 0 20px; }
-
   .gm-form__form { box-sizing: border-box; }
 
-  .gm-form__field { margin-bottom: 16px; }
+  .gm-form__field { margin-bottom: 18px; }
 
   /* A placeholder is not an accessible name, so every field keeps a real label —
      visually hidden, because the widget shows none. */
-  .gm-form__label {
+  .gm-form__label,
+  .gm-form__hp {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -140,7 +147,9 @@ const fields = FIELDS[variant];
     white-space: nowrap;
   }
 
-  .gm-form__form input,
+  .gm-form__form input[type='text'],
+  .gm-form__form input[type='email'],
+  .gm-form__form input[type='tel'],
   .gm-form__form textarea {
     display: block;
     width: 100%;
@@ -178,7 +187,7 @@ const fields = FIELDS[variant];
 
   .gm-form__form input:focus-visible,
   .gm-form__form textarea:focus-visible {
-    outline: 2px solid #ef6a31;
+    outline: 2px solid #096eef;
     outline-offset: 1px;
   }
 
@@ -186,23 +195,35 @@ const fields = FIELDS[variant];
      from the first paint, and must not be painted as an error. */
   .gm-form__form input:user-invalid,
   .gm-form__form textarea:user-invalid {
-    box-shadow: inset 0 0 0 1px #ef6a31;
+    box-shadow: inset 0 0 0 1px #d93025;
   }
 
-  .gm-form__hp {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
+  .gm-form__consent {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .gm-form__consent input {
+    flex: none;
+    width: 15px;
+    height: 15px;
+    margin: 3px 0 0;
+    accent-color: #096eef;
+  }
+
+  .gm-form__consent label {
+    margin-left: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #000;
   }
 
   .gm-form__submit-row { margin-top: 15px; }
 
   /* `:focus` is pinned to the resting look on purpose: the Hello theme styles every
      bare `button:hover`/`:focus` with its own accent colour, which would repaint the
-     widget's orange. `:focus-visible` still shows. */
+     widget's blue. `:focus-visible` still shows. */
   .gm-form__submit,
   .gm-form__submit:hover,
   .gm-form__submit:focus {
@@ -216,14 +237,14 @@ const fields = FIELDS[variant];
     line-height: 25px;
     color: #fff;
     text-align: center;
-    background: #ef6a31;
+    background: #096eef;
     border: 0;
     border-radius: 6px;
     cursor: pointer;
   }
 
-  .gm-form__submit:hover { background: #ce6542; }
-  .gm-form__submit:focus-visible { outline: 2px solid #292929; outline-offset: 2px; }
+  .gm-form__submit:hover { background: #0b5fca; }
+  .gm-form__submit:focus-visible { outline: 2px solid #000; outline-offset: 2px; }
   .gm-form__submit[disabled] { opacity: 0.6; cursor: progress; }
 
   .gm-form__status {
@@ -233,17 +254,34 @@ const fields = FIELDS[variant];
     color: inherit;
   }
 
-  .gm-form__status[data-state='error'] { color: #ef6a31; }
+  .gm-form__status[data-state='error'] { color: #d93025; }
   .gm-form__status[data-state='ok'] { color: #2f7d4f; }
+
+  .gm-form__terms {
+    margin: 8px 0 0;
+    font-size: 12px;
+    line-height: 18px;
+    color: #000;
+    text-align: center;
+  }
+
+  .gm-form__terms a { color: inherit; }
 </style>
 
 <script>
-  for (const form of document.querySelectorAll<HTMLFormElement>('form.gm-form__form')) {
+  /**
+   * Delegated, not per-form: the popup's markup is cloned out of a <template> the
+   * moment someone opens it, so a listener bound at load would never see this form
+   * — and a <script> cloned along with it would not run either.
+   */
+  document.addEventListener('submit', async (event) => {
+    const form = (event.target as HTMLElement).closest<HTMLFormElement>('form.gm-form__form');
+    if (!form) return;
+    event.preventDefault();
+
     const status = form.querySelector<HTMLParagraphElement>('.gm-form__status')!;
     const submit = form.querySelector<HTMLButtonElement>('.gm-form__submit')!;
     const endpoint = form.dataset.endpoint || '';
-
-    form.querySelector<HTMLInputElement>('[data-fill="path"]')!.value = location.pathname;
 
     const say = (message: string, state: 'ok' | 'error' | '') => {
       status.textContent = message;
@@ -251,40 +289,38 @@ const fields = FIELDS[variant];
       else delete status.dataset.state;
     };
 
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      say('', '');
+    say('', '');
+    if (!form.reportValidity()) return;
 
-      if (!form.reportValidity()) return;
+    form.querySelector<HTMLInputElement>('[data-fill="path"]')!.value = location.pathname;
 
-      // A filled honeypot is a bot: show success, send nothing.
-      const honeypot = form.querySelector<HTMLInputElement>('input[name="website"]')!;
-      if (honeypot.value.trim()) {
-        form.reset();
-        say('Thanks — we will be in touch shortly.', 'ok');
-        return;
-      }
+    // A filled honeypot is a bot: show success, send nothing.
+    const honeypot = form.querySelector<HTMLInputElement>('input[name="website"]')!;
+    if (honeypot.value.trim()) {
+      form.reset();
+      say('Thanks — we will be in touch shortly.', 'ok');
+      return;
+    }
 
-      if (!endpoint) {
-        say('This form is not connected yet. Please call or email us instead.', 'error');
-        return;
-      }
+    if (!endpoint) {
+      say('This form is not connected yet. Please call or email us instead.', 'error');
+      return;
+    }
 
-      submit.disabled = true;
-      const original = submit.textContent;
-      submit.textContent = 'Sending…';
+    submit.disabled = true;
+    const original = submit.textContent;
+    submit.textContent = 'Sending…';
 
-      try {
-        const response = await fetch(endpoint, { method: 'POST', body: new FormData(form) });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        form.reset();
-        say('Thanks — we will be in touch shortly.', 'ok');
-      } catch {
-        say('Sorry, something went wrong. Please try again or call us.', 'error');
-      } finally {
-        submit.disabled = false;
-        submit.textContent = original;
-      }
-    });
-  }
+    try {
+      const response = await fetch(endpoint, { method: 'POST', body: new FormData(form) });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      form.reset();
+      say('Thanks — we will be in touch shortly.', 'ok');
+    } catch {
+      say('Sorry, something went wrong. Please try again or call us.', 'error');
+    } finally {
+      submit.disabled = false;
+      submit.textContent = original;
+    }
+  });
 </script>

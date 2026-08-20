@@ -29,12 +29,12 @@
   ],
   "redirects": [
     {
-      "source": "/top-8-things-to-grow",
-      "destination": "/wp-content/uploads/2021/07/Top_8_Things_To_Grow_Your_Roofing_Business.pdf",
+      "source": "/author/admin",
+      "destination": "/",
       "permanent": true
     },
     {
-      "source": "/author/admin",
+      "source": "/home",
       "destination": "/",
       "permanent": true
     },
@@ -55,11 +55,6 @@
     },
     {
       "source": "/post-sitemap.xml",
-      "destination": "/sitemap-index.xml",
-      "permanent": true
-    },
-    {
-      "source": "/category-sitemap.xml",
       "destination": "/sitemap-index.xml",
       "permanent": true
     },
