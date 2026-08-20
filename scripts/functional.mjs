@@ -420,6 +420,22 @@ for (const [width, expected] of [[1440, true], [900, true], [390, false]]) {
   const own = await page.$$('#elementor-popup-modal-394 form.gm-form__form');
   if (own.length) {
     check('form: the popup carries exactly one replacement form', own.length === 1);
+    // The same widget id is embedded in the home page's own contact section too, and
+    // the footer's subscribe widget is on every page — three forms on this page.
+    check('form: all three of the page\'s widgets are replaced',
+      (await page.$$('form.gm-form__form')).length === 3,
+      `${(await page.$$('form.gm-form__form')).length} forms`);
+    check('form: the footer subscribe variant carries just Name and Email',
+      await page.$$eval('.gm-form--subscribe .gm-form__field input',
+        (els) => els.map((e) => e.getAttribute('name')).join(',') === 'full_name,email'));
+    check('form: the subscribe variant has no consents and no terms line',
+      (await page.$$('.gm-form--subscribe .gm-form__consent')).length === 0
+      && (await page.$$('.gm-form--subscribe .gm-form__terms')).length === 0);
+    check('form: every field id on the page is unique', await page.evaluate(() => {
+      const ids = [...document.querySelectorAll('.gm-form input[id], .gm-form textarea[id]')]
+        .map((e) => e.id);
+      return ids.length > 0 && new Set(ids).size === ids.length;
+    }));
     check('form: four fields, in the widget\'s order', await page.$$eval(
       '#elementor-popup-modal-394 .gm-form__field input, #elementor-popup-modal-394 .gm-form__field textarea',
       (els) => els.map((e) => e.getAttribute('name')).join(',') === 'full_name,email,phone,message'));
@@ -461,8 +477,11 @@ for (const [width, expected] of [[1440, true], [900, true], [390, false]]) {
       return status.dataset.state === 'ok' && form.querySelector('[name="email"]').value === '';
     }));
   } else {
-    check('form: the LeadConnector embed is retained while no endpoint is configured',
-      (await page.$$('#elementor-popup-modal-394 iframe[src*="vfrnMQAlDqN1xdt4Q60m"]')).length === 1);
+    check('form: the LeadConnector embeds are retained while no endpoint is configured',
+      (await page.$$('#elementor-popup-modal-394 iframe[src*="vfrnMQAlDqN1xdt4Q60m"]')).length === 1
+      && (await page.$$('iframe[src*="vfrnMQAlDqN1xdt4Q60m"]')).length === 2);
+    check('form: the subscribe embed is on every page, via the footer',
+      (await page.$$('footer iframe[src*="gc6zaq82dMr6CinO3VSX"]')).length === 1);
   }
   await ctx.close();
 }

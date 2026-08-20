@@ -14,16 +14,20 @@ const CSSDIR = path.join(ROOT, 'public/wp/css');
 const ORIGIN = 'https://lifeagentgrowthsystems.com';
 const ORIGIN_ESC = 'https:\\/\\/lifeagentgrowthsystems.com';
 
-// Lead-form widget ids → the variant of our replacement form.
+// Lead-form widget ids -> the variant of our replacement form.
 //
-// Only one entry: the "Contact Us" form the site shows inside Elementor popup 394,
-// which the header's `.contact-form` menu item opens on every page. That popup is
-// this site's one and only contact form.
+// Two of them, and the first matches twice on the home page:
+//   vfrnMQAlDqN1xdt4Q60m  the "Contact Us" form, embedded both in the home page's
+//                         own contact section (element ee9032b, beside the
+//                         `#contact-us` menu anchor) and inside Elementor popup 394,
+//                         which the header's `.contact-form` item opens on every page
+//   gc6zaq82dMr6CinO3VSX  the "Sign up for updates" subscribe form in the footer,
+//                         and therefore on every page (element f9de94f)
 //
 // Deliberately NOT listed, and why:
-//   cdZY1oqfd2VM9RLPCj6T  the booking calendar embedded on /schedule-a-call/ — an
-//                         appointment widget, not a contact form; our form would be
-//                         the wrong thing in its place.
+//   cdZY1oqfd2VM9RLPCj6T  the booking calendar on /schedule-a-call/ - an appointment
+//                         widget, not a contact form; our form would be the wrong
+//                         thing in its place.
 //   VO9V22uliCdvFlL9XROV  the form on the orphaned /home-2/ draft, and
 //   book-discovery-call   the appointment widget on the same page. Both are served
 //                         from links.sybrware.com, which no longer resolves at all
@@ -34,6 +38,7 @@ const ORIGIN_ESC = 'https:\\/\\/lifeagentgrowthsystems.com';
 //                         does not have. See the README's original-site bugs.
 const LEAD_FORMS = {
   vfrnMQAlDqN1xdt4Q60m: 'contact',
+  gc6zaq82dMr6CinO3VSX: 'subscribe',
 };
 
 // Hosts whose assets we mirror into public/ so the clone has no third-party image

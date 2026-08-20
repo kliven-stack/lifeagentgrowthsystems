@@ -93,7 +93,9 @@ const chat = CHAT_WIDGET ? chatWidgetHtml : '';
       <PageContent html={fragment(page.content)} />
     </slot>
 
-    {page.footer && <Fragment set:html={fragment(page.footer)} />}
+    {/* Through PageContent, not a bare Fragment: the footer carries the
+        "Sign up for updates" subscribe form on every page. */}
+    {page.footer && <PageContent html={fragment(page.footer)} region="footer" />}
 
     {/* Popup templates.
         Elementor keeps a popup out of the document until something opens it —

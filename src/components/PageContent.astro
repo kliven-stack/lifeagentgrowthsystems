@@ -1,7 +1,7 @@
 ---
 /**
- * Renders a cloned page fragment, swapping the marked LeadConnector embed for our
- * own static form when a Growthmap endpoint is configured.
+ * Renders a cloned page fragment, swapping the marked LeadConnector embeds for our
+ * own static forms when a Growthmap endpoint is configured.
  *
  * Astro components cannot be injected through `set:html`, so the fragment is split
  * on the markers extract.mjs left around each embed and re-emitted around the
@@ -20,15 +20,15 @@ const { html, region = 'content' } = Astro.props as Props;
 // Without an endpoint the original embeds are the working forms, so keep them.
 const useOwnForm = FORM_MODE === 'growthmap' && CONTACT_ENDPOINT !== '';
 
-const MARKER = /<!--gm-form:(contact):start-->[\s\S]*?<!--gm-form:\1:end-->/g;
+const MARKER = /<!--gm-form:(contact|subscribe):start-->[\s\S]*?<!--gm-form:\1:end-->/g;
 
 /** [html, form, html, form, …, html] */
-type Part = { html: string } | { variant: 'contact' };
+type Part = { html: string } | { variant: 'contact' | 'subscribe' };
 const parts: Part[] = [];
 let cursor = 0;
 for (const match of html.matchAll(MARKER)) {
   parts.push({ html: html.slice(cursor, match.index) });
-  parts.push(useOwnForm ? { variant: match[1] as 'contact' } : { html: match[0] });
+  parts.push(useOwnForm ? { variant: match[1] as 'contact' | 'subscribe' } : { html: match[0] });
   cursor = match.index + match[0].length;
 }
 parts.push({ html: html.slice(cursor) });
