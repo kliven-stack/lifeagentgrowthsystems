@@ -379,15 +379,30 @@ function initVideo(widget) {
  * ------------------------------------------------------------------ */
 
 /**
- * Elementor's own responsive defaults for the media carousel are not serialised
- * into `data-settings`; the measured values are 5 slides / 0px at ≥1025, 2 / 10px
- * at 768–1024 and 1 / 10px below that.
+ * Elementor's own defaults are not serialised into `data-settings`, and they differ
+ * per widget — so they are measured rather than assumed (the live slide counts, from
+ * _extract/probe.mjs, give the loop's duplicate count away exactly).
+ *
+ *   media-carousel  the /about/ logo strip. It does serialise `slides_per_view: 5`,
+ *                   so only the tablet/mobile fallbacks below are ever used: 2 and 1,
+ *                   with 10px gaps.
+ *   reviews         one review per slide at every width — 3 originals plus a single
+ *                   duplicate on each side, 5 in the wrapper at 1440, 900 and 390
+ *                   alike. Elementor Pro's default for this widget is 1, not 3, and
+ *                   getting it wrong is not cosmetic: every extra loop clone shifts
+ *                   the document order of everything after it.
  */
 const CAROUSEL_BREAKPOINTS = [
   { min: 1025, key: '' },
-  { min: 768, key: '_tablet', fallbackPerView: 2, fallbackSpace: 10 },
-  { min: 0, key: '_mobile', fallbackPerView: 1, fallbackSpace: 10 },
+  { min: 768, key: '_tablet', fallbackSpace: 10 },
+  { min: 0, key: '_mobile', fallbackSpace: 10 },
 ];
+
+/** Per-widget `slidesPerView` fallback, desktop / tablet / mobile. */
+const CAROUSEL_DEFAULT_PER_VIEW = {
+  'media-carousel.default': [3, 2, 1],
+  'reviews.default': [1, 1, 1],
+};
 
 /**
  * Drive one `.swiper` container.
@@ -558,6 +573,7 @@ function initElementorCarousel(widget) {
   const container = widget.querySelector('.elementor-main-swiper');
   if (!container) return;
   const s = settingsOf(widget);
+  const perViewDefaults = CAROUSEL_DEFAULT_PER_VIEW[widget.getAttribute('data-widget_type')] || [3, 2, 1];
 
   const settingFor = (name, bp, fallback) => {
     const value = s[`${name}${bp.key}`] ?? (bp.key ? undefined : s[name]);
@@ -575,9 +591,10 @@ function initElementorCarousel(widget) {
     prev: widget.querySelector('.elementor-swiper-button-prev'),
     layout() {
       const width = window.innerWidth;
-      const bp = CAROUSEL_BREAKPOINTS.find((b) => width >= b.min);
+      const index = CAROUSEL_BREAKPOINTS.findIndex((b) => width >= b.min);
+      const bp = CAROUSEL_BREAKPOINTS[index];
       return {
-        perView: settingFor('slides_per_view', bp, bp.fallbackPerView ?? 3),
+        perView: settingFor('slides_per_view', bp, perViewDefaults[index]),
         space: settingFor('space_between', bp, bp.fallbackSpace ?? 0),
       };
     },
@@ -787,6 +804,30 @@ function initJetTimeline(widget) {
  * to `<body>`. The compiled e-popup stylesheet hangs everything off those names —
  * a wrapper that is almost right renders as an empty overlay (playbook §3.12).
  * ------------------------------------------------------------------ */
+/**
+ * Elementor's dialog library stylesheet.
+ *
+ * It is a *conditional* asset: absent from every page's <link> list, fetched by
+ * elementor-pro only when a popup is first opened. It is also load-bearing — it
+ * carries `.dialog-type-lightbox { position: fixed; inset: 0; z-index: 9999 }`,
+ * without which the modal lays out in flow at the foot of the page instead of
+ * covering the viewport. Injected here at the same moment, and into <head> after
+ * the compiled sheets, which is where Elementor puts it too.
+ */
+const DIALOG_CSS = '/wp-content/plugins/elementor/assets/css/conditionals/dialog.min.css';
+
+function loadDialogCss() {
+  if (document.querySelector(`link[href="${DIALOG_CSS}"]`)) return Promise.resolve();
+  return new Promise((resolve) => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = DIALOG_CSS;
+    link.addEventListener('load', resolve, { once: true });
+    link.addEventListener('error', resolve, { once: true });
+    document.head.append(link);
+  });
+}
+
 function initPopups() {
   // BaseLayout parks each popup in a <template>, whose content is not part of the
   // DOM tree — so the pre-open document matches production's, where the popup is
@@ -816,7 +857,11 @@ function initPopups() {
 
     const onKey = (event) => { if (event.key === 'Escape') close(); };
 
-    const open = () => {
+    const open = async () => {
+      if (modal) return;
+      // Elementor fetches the dialog stylesheet before it shows the modal; so do we,
+      // or the first open paints one frame with the popup laid out in flow.
+      await loadDialogCss();
       if (modal) return;
       modal = document.createElement('div');
       modal.className = 'dialog-widget dialog-lightbox-widget dialog-type-buttons dialog-type-lightbox elementor-popup-modal';

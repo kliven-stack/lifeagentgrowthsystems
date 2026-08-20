@@ -133,9 +133,12 @@ for (const width of widths) {
         // Carousels autoplay on both sides; pin them to the first slide last of all
         // so the geometry diff is deterministic. Production runs real Swiper, the
         // clone runs the reimplementation in src/scripts/elementor.js — both are
-        // asked for loop index 0 with no transition.
+        // asked for loop index 0 with no transition. All three carousels are
+        // listed: the Essential Addons slider autoplays every 6s and its autoHeight
+        // rewrites the wrapper height per slide, so leaving it free makes the home
+        // page's lower half unmeasurable.
         await tab.evaluate(() => {
-          for (const el of document.querySelectorAll('.elementor-main-swiper, .e-n-carousel')) {
+          for (const el of document.querySelectorAll('.elementor-main-swiper, .e-n-carousel, .eael-testimonial-slider-main')) {
             if (el.swiper) { el.swiper.autoplay?.stop(); el.swiper.slideToLoop(0, 0); }
             else if (el.eCarousel) el.eCarousel.reset();
           }

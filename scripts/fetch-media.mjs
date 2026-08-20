@@ -15,11 +15,17 @@ const localPath = (u) => {
 };
 
 /**
- * Files the markup never links but the site still serves. None on this site: the
- * `/top-8-things-to-grow/` lead magnet is a rendered page here, not a redirect to a
- * PDF, and nothing else is reachable that the crawl did not already record.
+ * Files the markup never links but the site still serves.
+ *
+ * Elementor loads the dialog library's stylesheet *conditionally* — it is not in any
+ * page's <link> list, and only arrives once something opens a popup. It is the sheet
+ * that makes `.dialog-type-lightbox` a fixed, full-viewport overlay; without it the
+ * popup lays out in flow at the foot of the page. src/scripts/elementor.js injects
+ * the same <link> on first open, so the file has to exist at its original path.
  */
-const EXTRA = [];
+const EXTRA = [
+  'https://lifeagentgrowthsystems.com/wp-content/plugins/elementor/assets/css/conditionals/dialog.min.css',
+];
 
 const urls = [...JSON.parse(await readFile(path.join(ROOT, '_extract/assets.json'), 'utf8')), ...EXTRA];
 let ok = 0, cached = 0, failed = [];
