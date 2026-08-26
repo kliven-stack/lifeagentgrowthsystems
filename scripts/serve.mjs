@@ -46,7 +46,11 @@ createServer(async (req, res) => {
   };
 
   const hit = redirects.find((r) => {
-    if (keepBugs && RETIRED.has(r.source)) return false;
+    // Compared slash-insensitively: vercel.json now lists every path source in both
+    // spellings, so `/template/` is a rule of its own and a set containing only
+    // `/template` stopped matching it — which silently broke the one mode this
+    // bypass exists for, and showed up as 594 diffs on the two retired pages.
+    if (keepBugs && RETIRED.has(r.source.replace(/\/$/, ''))) return false;
     if (!matchesSource(r.source)) return false;
     return (r.has ?? []).every((h) => h.type === 'query' && url.searchParams.has(h.key));
   });
