@@ -25,9 +25,29 @@ createServer(async (req, res) => {
   const RETIRED = new Set(['/home-2', '/template']);
   const keepBugs = process.env.PUBLIC_ORIGINAL_BUGS === 'keep';
 
+  // Matched literally, exactly as Vercel matches it — no trailing-slash
+  // normalisation on either side. Being more forgiving here than production is
+  // how a whole class of broken redirects stayed invisible: every source written
+  // without a trailing slash 404s on Vercel for the slash form, which is the
+  // canonical form WordPress served and the one in Google's index. vercel.json
+  // now carries both spellings; this must stay strict so it cannot drift again.
+  // vercel.json's `:param` and `(.*)` patterns, matched the way Vercel matches
+  // them: EXACTLY, trailing slash included. Being more forgiving here than
+  // production is how a whole class of broken redirects stayed invisible — every
+  // source written without a trailing slash 404s on Vercel for the slash form,
+  // which is the canonical form WordPress served. Both spellings are now listed in
+  // vercel.json; this matcher stays strict so that dropping one fails
+  // `npm run functional` instead of production.
+  const matchesSource = (source) => {
+    const body = source.includes('(')
+      ? source
+      : source.replace(/[.+?^${}|[\]\\]/g, '\\$&').replace(/:[a-zA-Z_][\w]*\*/g, '.*').replace(/:[a-zA-Z_][\w]*/g, '[^/]+');
+    return new RegExp('^' + body + '$').test(url.pathname);
+  };
+
   const hit = redirects.find((r) => {
     if (keepBugs && RETIRED.has(r.source)) return false;
-    if (r.source.replace(/\/$/, '') !== url.pathname.replace(/\/$/, '')) return false;
+    if (!matchesSource(r.source)) return false;
     return (r.has ?? []).every((h) => h.type === 'query' && url.searchParams.has(h.key));
   });
   if (hit) {
