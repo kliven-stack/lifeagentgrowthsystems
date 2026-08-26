@@ -14,32 +14,35 @@ const CSSDIR = path.join(ROOT, 'public/wp/css');
 const ORIGIN = 'https://lifeagentgrowthsystems.com';
 const ORIGIN_ESC = 'https:\\/\\/lifeagentgrowthsystems.com';
 
-// Lead-form widget ids -> the variant of our replacement form.
-//
-// Two of them, and the first matches twice on the home page:
-//   vfrnMQAlDqN1xdt4Q60m  the "Contact Us" form, embedded both in the home page's
-//                         own contact section (element ee9032b, beside the
-//                         `#contact-us` menu anchor) and inside Elementor popup 394,
-//                         which the header's `.contact-form` item opens on every page
-//   gc6zaq82dMr6CinO3VSX  the "Sign up for updates" subscribe form in the footer,
-//                         and therefore on every page (element f9de94f)
-//
-// Deliberately NOT listed, and why:
-//   cdZY1oqfd2VM9RLPCj6T  the booking calendar on /schedule-a-call/ - an appointment
-//                         widget, not a contact form; our form would be the wrong
-//                         thing in its place.
-//   VO9V22uliCdvFlL9XROV  the form on the orphaned /home-2/ draft, and
-//   book-discovery-call   the appointment widget on the same page. Both are served
-//                         from links.sybrware.com, which no longer resolves at all
-//                         (NXDOMAIN), so both are already blank frames on the
-//                         WordPress site. /home-2/ is an unlinked leftover of the
-//                         previous design; it is cloned exactly as production serves
-//                         it rather than quietly given a working form the live page
-//                         does not have. See the README's original-site bugs.
-const LEAD_FORMS = {
-  vfrnMQAlDqN1xdt4Q60m: 'contact',
-  gc6zaq82dMr6CinO3VSX: 'subscribe',
-};
+/**
+ * The lead forms ship exactly as WordPress serves them. Nothing here replaces one.
+ *
+ *   vfrnMQAlDqN1xdt4Q60m  the "Contact Us" form, embedded twice on the home page —
+ *                         in its own contact section (element ee9032b, beside the
+ *                         `#contact-us` menu anchor) and inside Elementor popup 394,
+ *                         which the header's `.contact-form` item opens on every page
+ *   gc6zaq82dMr6CinO3VSX  the "Sign up for updates" subscribe form in the footer,
+ *                         and therefore on every page (element f9de94f)
+ *
+ * Both are GoHighLevel iframes on `verified.trustymail.co`, a host that outlives the
+ * WordPress install — so the embed *is* the working form. Each keeps the
+ * `form_embed.js` resizer that sizes it: the iframe is served with
+ * `style="height:100%"`, which on a block-level iframe resolves to the default
+ * 150px, and the resizer is what rewrites that to the height the form reports from
+ * inside the frame.
+ *
+ * The booking widgets are untouched for the same reason and one more:
+ *   cdZY1oqfd2VM9RLPCj6T  the calendar on /schedule-a-call/ — an appointment widget,
+ *                         not a contact form.
+ *   VO9V22uliCdvFlL9XROV  the form on the orphaned /home-2/ draft, and
+ *   book-discovery-call   the appointment widget on the same page. Both are served
+ *                         from links.sybrware.com, which no longer resolves at all
+ *                         (NXDOMAIN), so both are already blank frames on the
+ *                         WordPress site. /home-2/ is an unlinked leftover of the
+ *                         previous design; it is cloned exactly as production serves
+ *                         it rather than quietly given a working form the live page
+ *                         does not have. See the README's original-site bugs.
+ */
 
 // Hosts whose assets we mirror into public/ so the clone has no third-party image
 // deps. This site references none — every image is on the WordPress origin.
@@ -160,26 +163,6 @@ function cleanFragment($, $el) {
       $e.attr('style', s.split(ORIGIN).join(''));
     }
   });
-  // The popup's lead form is wrapped in markers so the page can swap in our own
-  // static form when a Growthmap endpoint is configured (playbook §4b). The booking
-  // calendars are left exactly as production serves them — see LEAD_FORMS above.
-  for (const [formId, variant] of Object.entries(LEAD_FORMS)) {
-    $el.find(`iframe[src*="${formId}"]`).each((i, el) => {
-      const $frame = $(el);
-      // Wrap the whole HTML widget, so swapping in our form also drops the embed's
-      // loader script rather than leaving it hunting for an iframe that is gone.
-      const $widget = $frame.closest('[data-widget_type="html.default"]');
-      const $target = $widget.length ? $widget : $frame;
-      if ($widget.length) {
-        $widget.prepend(`<!--gm-form:${variant}:start-->`);
-        $widget.append(`<!--gm-form:${variant}:end-->`);
-      } else {
-        $target.before(`<!--gm-form:${variant}:start-->`);
-        $target.after(`<!--gm-form:${variant}:end-->`);
-      }
-    });
-  }
-
   // WordPress-only endpoints that do not exist on the clone.
   $el.find('a[href^="/feed"], a[href^="/wp-json"], a[href^="/xmlrpc.php"]').each((i, el) => {
     $(el).attr('href', '/');

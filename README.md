@@ -3,8 +3,8 @@
 A pixel-faithful static clone of the WordPress/Elementor site at
 <https://lifeagentgrowthsystems.com>, built to the team's
 [migration playbook](../MIGRATION-PLAYBOOK.md). Astro 5, `output: 'static'`, no UI
-framework, no serverless functions — the two lead forms post straight from the
-browser to the Growthmap endpoint (playbook §4b).
+framework, no serverless functions — the lead forms are third-party embeds that
+ship exactly as WordPress serves them.
 
 12 routes: 10 Elementor pages, the category archive and the theme's 404 template.
 The site has no posts.
@@ -88,33 +88,32 @@ bug 8.
 ## Forms
 
 Two LeadConnector ("Trustymail") widgets are embedded on the WordPress site, and the
-first of them twice:
+first of them twice. **All three ship exactly as WordPress serves them.**
 
-| Variant | Where | Fields |
+| Widget | Where | Fields |
 | --- | --- | --- |
-| `contact` | the home page's own contact section (element `ee9032b`) **and** popup 394, which the header's "Contact Us" item opens on every page | Name\*, Email\*, Phone\*, Write your Message\*, two consent checkboxes, Terms/Privacy |
-| `subscribe` | "Sign up for updates" in the footer, every page (element `f9de94f`) | Name\*, Email\* |
+| contact | the home page's own contact section (element `ee9032b`) **and** popup 394, which the header's "Contact Us" item opens on every page | Name\*, Email\*, Phone\*, Write your Message\*, two consent checkboxes, Terms/Privacy |
+| subscribe | "Sign up for updates" in the footer, every page (element `f9de94f`) | Name\*, Email\* |
 
-`src/components/ContactForm.astro` replaces all three with one static form that POSTs
-`FormData` to `PUBLIC_CONTACT_ENDPOINT`: inline success/error via `aria-live`, button
-disabled in flight, a CSS-hidden `website` honeypot, native validation. The field
-set, placeholders, consent copy, colours (`#e9ecef` fields, `#096eef` button), radii,
-paddings and the 51px/18px row rhythm were read out of the live widgets' own
-documents with `npm run form:inspect`.
+They are served from `verified.trustymail.co`, a GoHighLevel host that outlives the
+WordPress install — so the embed *is* the working form, and it keeps working after
+cutover; it just stops being ours to route. Rebuilding it would trade a form that
+works today for one that needs an endpoint configured before it does.
 
-Three deliberate departures from the widgets, all accessibility fixes: every field
-gets a visually-hidden `<label>` (a placeholder is not an accessible name), the
-fields the widgets mark with an asterisk are actually `required` (the widgets render
-the asterisk but set `required` on nothing), and the phone field is a plain `tel`
-input rather than the widget's country-picker component.
-
-**Until `PUBLIC_CONTACT_ENDPOINT` is set, the pages keep the original iframes**, so a
-deploy before the endpoint exists never ships a form that goes nowhere.
-`PUBLIC_FORM_MODE=embed` forces them back afterwards.
+Each ships with its `form_embed.js` resizer, and that detail is load-bearing rather
+than incidental: the iframe is served with `style="height:100%"`, which on a
+block-level iframe resolves to the default 150px. The resizer is what receives the
+rendered height from inside the frame and rewrites the inline style to it. Drop it
+and the form renders clipped to a sliver. `npm run functional` asserts the iframes
+and the resizer.
 
 The booking widgets — the calendar on `/schedule-a-call/` and the pair on the
-orphaned `/home-2/` — are **not** replaced. They are appointment calendars, not
-contact forms. Both `/home-2/` widgets come from a host that no longer resolves; see the open items.
+orphaned `/home-2/` — are untouched for the same reason and one more: they are
+appointment calendars, not contact forms. Both `/home-2/` widgets come from a host
+that no longer resolves; see the open items.
+
+`npm run form:inspect` reads what each widget actually renders, which is how you
+check an embed still works after cutover without clicking through the site.
 
 ---
 
@@ -125,8 +124,6 @@ Everything is optional; the defaults reproduce the WordPress site.
 | Variable | Default | Effect |
 | --- | --- | --- |
 | `PUBLIC_SITE_URL` | `https://lifeagentgrowthsystems.com` | canonical tags + sitemap |
-| `PUBLIC_CONTACT_ENDPOINT` | *(empty)* | Growthmap lead endpoint; empty keeps the original embeds |
-| `PUBLIC_FORM_MODE` | `growthmap` | `embed` forces the original iframes back |
 | `PUBLIC_WEBFONTS` | `on` | `off` drops the Google fonts |
 | `PUBLIC_CHAT_WIDGET` | `on` | `off` drops the GoHighLevel chat loader |
 | `PUBLIC_ORIGINAL_BUGS` | *(empty)* | `keep` reproduces the WordPress site's own bugs instead of fixing them — what `npm run compare` needs |
@@ -347,9 +344,9 @@ The generated sitemap lists exactly the nine URLs Yoast lists — `/category/…
 `/google-my-business-walkthrough/` and the 404 route are built so their URLs keep
 resolving, and kept out of the sitemap because production keeps them out.
 
-Then set `PUBLIC_CONTACT_ENDPOINT` in the project's environment variables and
-redeploy to hand both forms over to Growthmap. A human should submit each one once
-end to end.
+A human should submit each embed once end to end. They post to GoHighLevel, not to
+this site, so they behave identically before and after cutover — and there is
+nothing to configure for them.
 
 Do **not** set `PUBLIC_ORIGINAL_BUGS` in the Vercel project — it exists so the
 fidelity harness can still measure against WordPress, and setting it in production

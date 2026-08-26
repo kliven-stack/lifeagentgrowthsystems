@@ -447,76 +447,25 @@ for (const [width, expected] of [[1440, true], [900, true], [390, false]]) {
 
 /* ---------------------------------------------------------------- lead form */
 {
+  // Every form ships as WordPress serves it: the LeadConnector iframe *and* the
+  // `form_embed.js` resizer that sizes it. The resizer is not optional — the iframe
+  // is served with `style="height:100%"`, which on a block-level iframe resolves to
+  // the default 150px, and the resizer is what receives the rendered height from
+  // inside the frame and rewrites the inline style to it. Without it the form
+  // renders clipped to a sliver.
   const { ctx, page } = await open('/');
   await page.locator(`${HEADER} nav.elementor-nav-menu--main li.contact-form > a`).first().click();
   await page.waitForTimeout(700);
 
-  const own = await page.$$('#elementor-popup-modal-394 form.gm-form__form');
-  if (own.length) {
-    check('form: the popup carries exactly one replacement form', own.length === 1);
-    // The same widget id is embedded in the home page's own contact section too, and
-    // the footer's subscribe widget is on every page — three forms on this page.
-    check('form: all three of the page\'s widgets are replaced',
-      (await page.$$('form.gm-form__form')).length === 3,
-      `${(await page.$$('form.gm-form__form')).length} forms`);
-    check('form: the footer subscribe variant carries just Name and Email',
-      await page.$$eval('.gm-form--subscribe .gm-form__field input',
-        (els) => els.map((e) => e.getAttribute('name')).join(',') === 'full_name,email'));
-    check('form: the subscribe variant has no consents and no terms line',
-      (await page.$$('.gm-form--subscribe .gm-form__consent')).length === 0
-      && (await page.$$('.gm-form--subscribe .gm-form__terms')).length === 0);
-    check('form: every field id on the page is unique', await page.evaluate(() => {
-      const ids = [...document.querySelectorAll('.gm-form input[id], .gm-form textarea[id]')]
-        .map((e) => e.id);
-      return ids.length > 0 && new Set(ids).size === ids.length;
-    }));
-    check('form: four fields, in the widget\'s order', await page.$$eval(
-      '#elementor-popup-modal-394 .gm-form__field input, #elementor-popup-modal-394 .gm-form__field textarea',
-      (els) => els.map((e) => e.getAttribute('name')).join(',') === 'full_name,email,phone,message'));
-    check('form: both consent checkboxes are present and optional', await page.$$eval(
-      '#elementor-popup-modal-394 .gm-form__consent input',
-      (els) => els.length === 2 && els.every((e) => !e.required && e.type === 'checkbox')));
-    check('form: the Growthmap terms links are intact', await page.$$eval(
-      '#elementor-popup-modal-394 .gm-form__terms a',
-      (els) => els.length === 2 && els.every((a) => a.href.startsWith('https://buildwithgrowthmap.com/'))));
-    // The field itself keeps its intrinsic size; what hides it is the 1x1 clipped
-    // wrapper around it. A bot filling the form by name still finds it.
-    check('form: honeypot is hidden from people', await page.$eval(
-      '#elementor-popup-modal-394 input[name="website"]', (hp) => {
-        const wrap = hp.closest('.gm-form__hp');
-        const r = wrap.getBoundingClientRect();
-        const cs = getComputedStyle(wrap);
-        return hp.tabIndex === -1 && r.width <= 1 && r.height <= 1
-          && cs.overflow === 'hidden' && cs.clipPath !== 'none';
-      }));
-    check('form: required fields block submission', await page.$eval(
-      '#elementor-popup-modal-394 form.gm-form__form', (f) => !f.checkValidity()));
-    check('form: every field has a real label', await page.$$eval(
-      '#elementor-popup-modal-394 .gm-form__field', (fields) => fields.every((f) => {
-        const input = f.querySelector('input, textarea');
-        return !!f.querySelector(`label[for="${input.id}"]`);
-      })));
-    // The form is cloned out of a <template> long after load, so a listener bound
-    // per-form at load would never see it. The handler is delegated; prove it runs.
-    check('form: the delegated submit handler is wired to the cloned form', await page.evaluate(async () => {
-      const form = document.querySelector('#elementor-popup-modal-394 form.gm-form__form');
-      form.querySelector('[name="full_name"]').value = 'Test Person';
-      form.querySelector('[name="email"]').value = 'test@example.com';
-      form.querySelector('[name="phone"]').value = '5555555555';
-      form.querySelector('[name="message"]').value = 'Hello';
-      form.querySelector('[name="website"]').value = 'spam';   // honeypot: silent success
-      form.requestSubmit();
-      await new Promise((r) => setTimeout(r, 400));
-      const status = form.querySelector('.gm-form__status');
-      return status.dataset.state === 'ok' && form.querySelector('[name="email"]').value === '';
-    }));
-  } else {
-    check('form: the LeadConnector embeds are retained while no endpoint is configured',
-      (await page.$$('#elementor-popup-modal-394 iframe[src*="vfrnMQAlDqN1xdt4Q60m"]')).length === 1
-      && (await page.$$('iframe[src*="vfrnMQAlDqN1xdt4Q60m"]')).length === 2);
-    check('form: the subscribe embed is on every page, via the footer',
-      (await page.$$('footer iframe[src*="gc6zaq82dMr6CinO3VSX"]')).length === 1);
-  }
+  check('form: the popup opens the LeadConnector contact embed',
+    (await page.$$('#elementor-popup-modal-394 iframe[src*="vfrnMQAlDqN1xdt4Q60m"]')).length === 1);
+  // The same widget is embedded in the home page's own contact section too.
+  check('form: the home page carries both copies of the contact embed',
+    (await page.$$('iframe[src*="vfrnMQAlDqN1xdt4Q60m"]')).length === 2);
+  check('form: the subscribe embed is on every page, via the footer',
+    (await page.$$('footer iframe[src*="gc6zaq82dMr6CinO3VSX"]')).length === 1);
+  check('form: the resizer ships with them',
+    (await page.$$('script[src*="form_embed"], script[src*="/wp-content/litespeed/js/"]')).length >= 1);
   await ctx.close();
 }
 
@@ -526,8 +475,8 @@ for (const [width, expected] of [[1440, true], [900, true], [390, false]]) {
   const { ctx, page } = await open('/schedule-a-call/');
   check('booking: /schedule-a-call/ keeps its calendar embed',
     (await page.$$('iframe[src*="verified.trustymail.co/widget/booking/"]')).length === 1);
-  check('booking: no replacement form was substituted for it',
-    (await page.$$('main form.gm-form__form, [data-elementor-type="wp-page"] form.gm-form__form')).length === 0);
+  check('booking: nothing was substituted for it',
+    (await page.$$('main form[action*="example"], [data-elementor-type="wp-page"] form.gm-form__form')).length === 0);
   await ctx.close();
 }
 
